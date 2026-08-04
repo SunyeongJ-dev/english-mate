@@ -6,13 +6,28 @@ export default function Home() {
   const [input, setInput] = useState("");
   const [isChatting, setIsChatting] = useState(false);
   const [messages, setMessages] = useState<string[]>([]);
+  const newMessage = messages[messages.length - 1] || "";
+  const [responseMessage, setResponseMessage] = useState("");
 
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setInput("");
     setIsChatting(true);
     setMessages((prevMessages) => [...prevMessages, input]);
+    sendMessageToServer(input);
   };
+
+  async function sendMessageToServer(message: string) {
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ input: message }),
+    });
+    const data = await res.json();
+    setResponseMessage(data.message);
+  }
 
   return (
     <>
@@ -25,9 +40,8 @@ export default function Home() {
           aria-label="chat"
           className={`${isChatting ? "flex" : "hidden"} flex flex-col items-center justify-center gap-4 border border-gray-300 rounded-md p-4`}
         >
-          {messages.map((message, index) => (
-            <p key={index}>{message}</p>
-          ))}
+          <p className="bg-white text-black p-2 rounded-md">{newMessage}</p>
+          <p className="bg-white text-black p-2 rounded-md">{responseMessage}</p>
         </div>
         <div
           aria-label="input"
