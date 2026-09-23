@@ -33,7 +33,7 @@ export default function Home() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ input: message }),
+      body: JSON.stringify({ input: message, language }),
     });
     if (!res.ok) {
       throw new Error("Failed to fetch review");
