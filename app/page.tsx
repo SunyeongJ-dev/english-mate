@@ -1,23 +1,33 @@
 "use client";
 
 import { useState } from "react";
+import { ViewState, Language, Result, createHistoryItem } from "@/app/lib/types";
+
 
 export default function Home() {
   const [input, setInput] = useState("");
-  const [isChatting, setIsChatting] = useState(false);
-  const [messages, setMessages] = useState<string[]>([]);
-  const newMessage = messages[messages.length - 1] || "";
-  const [responseMessage, setResponseMessage] = useState("");
+  const [state, setState] = useState<ViewState>({ status: "waiting" });
+  const [language, setLanguage] = useState<Language>("en");
 
-  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+  async function handleSubmit(
+    e: React.FormEvent<HTMLFormElement>,
+  ): Promise<void> {
     e.preventDefault();
+    const text = input.trim();
+    if (!text) return;
     setInput("");
-    setIsChatting(true);
-    setMessages((prevMessages) => [...prevMessages, input]);
-    sendMessageToServer(input);
+    setState({ status: "loading" });
+
+    try {
+      const result = await requestReview(text);
+      const reviewedResult = createHistoryItem(text, result, language);
+      setState({ status: "result", item: reviewedResult });
+    } catch (error) {
+      setState({ status: "error", message: "An error occurred while processing your request." }); 
+    }
   };
 
-  async function sendMessageToServer(message: string) {
+  async function requestReview(message: string): Promise<Result> {
     const res = await fetch("/api/chat", {
       method: "POST",
       headers: {
@@ -25,8 +35,11 @@ export default function Home() {
       },
       body: JSON.stringify({ input: message }),
     });
+    if (!res.ok) {
+      throw new Error("Failed to fetch review");
+    }
     const data = await res.json();
-    setResponseMessage(data.message);
+    return data;
   }
 
   return (
@@ -36,26 +49,47 @@ export default function Home() {
         <p>Your Name</p>
       </header>
       <div className="p-4">
+        <button className={`language === "en" ? "bg-blue-500 text-white p-2 rounded-md" : "bg-gray-300 text-gray-500 p-2 rounded-md"`}>English</button>
+        <button className={`language === "fr" ? "bg-blue-500 text-white p-2 rounded-md" : "bg-gray-300 text-gray-500 p-2 rounded-md"`}>French</button>
+        <button className={`language === "ko" ? "bg-blue-500 text-white p-2 rounded-md" : "bg-gray-300 text-gray-500 p-2 rounded-md"`}>Korean</button>
+        </div>
+      <div className="p-4">
         <div
           aria-label="chat"
-          className={`${isChatting ? "flex" : "hidden"} flex flex-col items-center justify-center gap-4 border border-gray-300 rounded-md p-4`}
+          className="flex flex-col items-center justify-center gap-4 border border-gray-300 rounded-md p-4"
         >
-          <p className="bg-white text-black p-2 rounded-md">{newMessage}</p>
-          <p className="bg-white text-black p-2 rounded-md">{responseMessage}</p>
+            {state.status === "waiting" && (
+              <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+                <textarea
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  className="border border-gray-300 rounded-md p-2 w-full"
+                  rows={4}
+                  placeholder="Type your text here..."
+                />
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white p-2 rounded-md"
+                >
+                  Submit
+                </button>
+              </form>
+            )}
+            {state.status === "loading" && (
+              <p className="bg-white text-black p-2 rounded-md">Processing your request...</p>
+            )}
+            {state.status === "result" && (<>
+              <p className="bg-white text-black p-2 rounded-md">{state.item.result.level}</p>
+              <p className="bg-white text-black p-2 rounded-md">{state.item.result.formal}</p>
+              <p className="bg-white text-black p-2 rounded-md">{state.item.result.informal}</p>
+              <p className="bg-white text-black p-2 rounded-md">{state.item.result.note}</p>
+              </>
+            )}
+            {state.status === "error" && (
+              <p className="bg-white text-black p-2 rounded-md">{state.message}</p>
+            )}
         </div>
-        <div
-          aria-label="input"
-          className="flex flex-col items-center justify-center gap-4"
-        >
-          <form onSubmit={handleSubmit} className="flex w-full justify-center">
-            <input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Enter your text here..."
-              className="border border-gray-300 rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            ></input>
-          </form>
-        </div>
+
       </div>
     </>
   );
