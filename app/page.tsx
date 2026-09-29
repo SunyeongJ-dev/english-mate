@@ -15,15 +15,16 @@ export default function Home() {
     e.preventDefault();
     const text = input.trim();
     if (!text) return;
-    setInput("");
     setState({ status: "loading" });
 
     try {
       const result = await requestReview(text);
+      setInput("");
       const reviewedResult = createHistoryItem(text, result, language);
       setState({ status: "result", item: reviewedResult });
     } catch (error) {
-      setState({ status: "error", message: "An error occurred while processing your request." }); 
+      setState({ status: "error", message: "An error occurred while processing your request." });
+      console.error("Error during requestReview:", error);
     }
   };
 
@@ -58,7 +59,7 @@ export default function Home() {
           aria-label="chat"
           className="flex flex-col items-center justify-center gap-4 border border-gray-300 rounded-md p-4"
         >
-            {state.status === "waiting" && (
+            {state.status === "waiting" || state.status === "error" && (
               <form onSubmit={handleSubmit} className="flex flex-col gap-2">
                 <textarea
                   value={input}
