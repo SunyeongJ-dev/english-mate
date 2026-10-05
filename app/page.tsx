@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import { ViewState, Language, Result, createHistoryItem } from "@/app/lib/types";
-
+import Sidebar from "@/app/components/Sidebar";
+import LanguageSwitcher from "@/app/components/LanguageSwitcher";
+import PromptForm from "@/app/components/PromptForm";
+import ResultView from "@/app/components/ResultView";
 
 export default function Home() {
   const [input, setInput] = useState("");
@@ -10,7 +13,7 @@ export default function Home() {
   const [language, setLanguage] = useState<Language>("en");
 
   async function handleSubmit(
-    e: React.FormEvent<HTMLFormElement>,
+    e: React.SubmitEvent<HTMLFormElement>,
   ): Promise<void> {
     e.preventDefault();
     const text = input.trim();
@@ -43,55 +46,53 @@ export default function Home() {
     return data;
   }
 
+    function handleNewSentence() {
+    setState({ status: "waiting" });
+  }
+
   return (
-    <>
-      <header className="flex items-center justify-between gap-2">
-        <h1>English Mate</h1>
-        <p>Your Name</p>
-      </header>
-      <div className="p-4">
-        <button className={`language === "en" ? "bg-blue-500 text-white p-2 rounded-md" : "bg-gray-300 text-gray-500 p-2 rounded-md"`}>English</button>
-        <button className={`language === "fr" ? "bg-blue-500 text-white p-2 rounded-md" : "bg-gray-300 text-gray-500 p-2 rounded-md"`}>French</button>
-        <button className={`language === "ko" ? "bg-blue-500 text-white p-2 rounded-md" : "bg-gray-300 text-gray-500 p-2 rounded-md"`}>Korean</button>
-        </div>
-      <div className="p-4">
-        <div
-          aria-label="chat"
-          className="flex flex-col items-center justify-center gap-4 border border-gray-300 rounded-md p-4"
-        >
-            {state.status === "waiting" || state.status === "error" && (
-              <form onSubmit={handleSubmit} className="flex flex-col gap-2">
-                <textarea
+    <div className="flex h-dvh bg-white text-neutral-900">
+      <Sidebar />
+ 
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="flex justify-end px-4 py-4 md:px-8">
+          <LanguageSwitcher value={language} onChange={setLanguage} />
+        </header>
+ 
+        <main className="flex flex-1 flex-col overflow-y-auto px-4">
+          <div className="m-auto w-full max-w-2xl py-4">
+            {state.status === "result" ? (
+              <ResultView
+                sentence={state.item.input}
+                result={state.item.result}
+                onNew={handleNewSentence}
+              />
+            ) : (
+              <>
+                <h1 className="text-2xl font-semibold tracking-tight">
+                  Give your sentence
+                </h1>
+                <p className="mt-1 mb-6 text-neutral-600">
+                  Write a sentence you want to practice.
+                </p>
+                <PromptForm
                   value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  className="border border-gray-300 rounded-md p-2 w-full"
-                  rows={4}
-                  placeholder="Type your text here..."
+                  onChange={setInput}
+                  onSubmit={handleSubmit}
+                  isLoading={state.status === "loading"}
+                  errorMessage={
+                    state.status === "error" ? state.message : undefined
+                  }
                 />
-                <button
-                  type="submit"
-                  className="bg-blue-500 text-white p-2 rounded-md"
-                >
-                  Submit
-                </button>
-              </form>
-            )}
-            {state.status === "loading" && (
-              <p className="bg-white text-black p-2 rounded-md">Processing your request...</p>
-            )}
-            {state.status === "result" && (<>
-              <p className="bg-white text-black p-2 rounded-md">{state.item.result.level}</p>
-              <p className="bg-white text-black p-2 rounded-md">{state.item.result.formal}</p>
-              <p className="bg-white text-black p-2 rounded-md">{state.item.result.informal}</p>
-              <p className="bg-white text-black p-2 rounded-md">{state.item.result.note}</p>
               </>
             )}
-            {state.status === "error" && (
-              <p className="bg-white text-black p-2 rounded-md">{state.message}</p>
-            )}
-        </div>
-
+          </div>
+        </main>
+ 
+        <footer className="px-4 py-6 text-center text-sm text-neutral-500">
+          © {new Date().getFullYear()} English Mate
+        </footer>
       </div>
-    </>
+    </div>
   );
 }
