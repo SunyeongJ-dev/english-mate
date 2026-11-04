@@ -23,16 +23,6 @@ English Mate helps English learners check their writing. The user enters one sen
 - `app/api/chat/route.ts`: No prompt goes here. The only place that calls Claude.
 - `app/page.tsx`: Main page goes here. No server-only code or secret goes here. Never import the Anthropic SDK; call Claude only through `fetch("/api/chat")`.
 
-## Code style
-
-<!-- Optional for now. One real snippet from your code
-     beats a paragraph of description. -->
-
-## Git
-
-<!-- Your board already uses conventional commit types
-     (feat, docs, fix...). How big should one commit be? -->
-
 ## Boundaries
 
 ### Always
