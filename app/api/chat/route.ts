@@ -3,6 +3,7 @@ import { LANGUAGES, LEVELS } from "@/app/lib/types";
 import { buildSystemPrompt } from "@/app/lib/prompt";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const MODEL = "claude-haiku-5-5";
 
 function validateResult(result: any): boolean {
   if (
@@ -40,7 +41,7 @@ export async function POST(req: Request) {
   let text = "";
   try {
     const response = await client.messages.create({
-      model: "claude-sonnet-4-6",
+      model: MODEL,
       max_tokens: 1024,
       system: buildSystemPrompt(language),
       messages: [
