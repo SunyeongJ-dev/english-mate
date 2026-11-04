@@ -1,5 +1,53 @@
-<!-- BEGIN:nextjs-agent-rules -->
-# This is NOT the Next.js you know
+# English Mate
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
-<!-- END:nextjs-agent-rules -->
+English Mate helps English learners check their writing. The user enters one sentence, and the app rates how natural it sounds and suggests two alternatives: one formal and one casual.
+
+## Stack
+
+- Next.js 16 App Router
+- React 19
+- TypeScript 5
+- Tailwind CSS 4
+- Anthropic SDK
+
+## Commands
+
+- `pnpm run dev`: start the local dev server (for humans, not for checking work)
+- `pnpm run lint`: ESLint
+- `pnpm run build`: production build + TypeScript check
+
+## Project structure
+
+- `app/lib/types.ts`: All the reusable types go here. Secrets or server-only code don't go here.
+- `app/lib/prompt.ts`: Prompt for Claude goes here. Server-only. Never import from client components.
+- `app/api/chat/route.ts`: No prompt goes here. The only place that calls Claude.
+- `app/page.tsx`: Main page goes here. No server-only code or secret goes here. Never import the Anthropic SDK; call Claude only through `fetch("/api/chat")`.
+
+## Code style
+
+<!-- Optional for now. One real snippet from your code
+     beats a paragraph of description. -->
+
+## Git
+
+<!-- Your board already uses conventional commit types
+     (feat, docs, fix...). How big should one commit be? -->
+
+## Boundaries
+
+### Always
+
+- Run `pnpm run lint` and `pnpm run build` before saying a task is done.
+- Show me a plan before editing.
+- Use pnpm, not npm or yarn.
+
+### Ask first
+
+- Changing `MODEL` in `app/api/chat/route.ts`.
+- Running `pnpm add`.
+
+### Never
+
+- Import server-only files into client components.
+- Commit or push without my approval.
+- Add the `NEXT_PUBLIC_` prefix to the API key or expose it to the client.
