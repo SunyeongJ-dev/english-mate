@@ -42,6 +42,9 @@ export const LEVEL_LABELS: Record<Language, Record<Level, string>> = {
   },
 };
 
+export const INVALID_INPUT_MESSAGE = "Please enter one English sentence.";
+export const REQUEST_FAILED_MESSAGE = "Something went wrong. Please try again.";
+
 export function createHistoryItem(
   input: string,
   result: Result,
