@@ -32,7 +32,7 @@ export async function POST(req: Request) {
     return Response.json({ error: "Invalid input" }, { status: 400 });
   }
   if (input.length > 1000) {
-    return Response.json({ error: "Input is too long" }, { status: 400 });
+    return Response.json({ error: "Input is too long." }, { status: 400 });
   }
   if (!LANGUAGES.includes(language)) {
     return Response.json({ error: "Invalid language" }, { status: 400 });
