@@ -6,7 +6,7 @@ export type Language = (typeof LANGUAGES)[number];
 export type Result = {
   level: Level;
   formal: string;
-  informal: string;
+  casual: string;
   note: string;
 };
 

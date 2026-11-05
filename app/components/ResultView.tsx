@@ -10,7 +10,7 @@ export default function ResultView({ sentence, result, onNew }: Props) {
   const rows = [
     { label: "Level", value: result.level },
     { label: "Formal", value: result.formal },
-    { label: "Informal", value: result.informal },
+    { label: "Casual", value: result.casual },
     { label: "Note", value: result.note },
   ];
 

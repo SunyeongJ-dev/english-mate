@@ -11,7 +11,7 @@ function validateResult(result: any): boolean {
     !result ||
     !LEVELS.includes(result.level) ||
     typeof result.formal !== "string" ||
-    typeof result.informal !== "string" ||
+    typeof result.casual !== "string" ||
     typeof result.note !== "string"
   ) {
     return false;
@@ -81,7 +81,7 @@ export async function POST(req: Request) {
   return Response.json({
     level: result.level,
     formal: result.formal,
-    informal: result.informal,
+    casual: result.casual,
     note: result.note,
   });
 }
