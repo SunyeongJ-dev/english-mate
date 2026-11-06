@@ -48,7 +48,7 @@ Invalid input, `이것은 테스트입니다`:
 - Polished UI design, including the result card (spec 002)
 - Saving results in `localStorage` (spec 003)
 - Choosing Claude's response language (spec 004)
-- Translating the error messages (later, with the language button feature). They are English only for now.
+- Translating the error messages (spec 004)
 
 ## Done when
 
