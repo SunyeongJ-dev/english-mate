@@ -23,6 +23,13 @@ English Mate helps English learners check their writing. The user enters one sen
 - `app/api/chat/route.ts`: No prompt goes here. The only place that calls Claude.
 - `app/page.tsx`: Main page goes here. No server-only code or secret goes here. Never import the Anthropic SDK; call Claude only through `fetch("/api/chat")`.
 
+## Writing specs
+
+- Write only the target state, never the change from the current code ("as now", "no longer", "is removed"). Notes about the current code go in `todo.md`.
+  - ❌ `The spinner does not spin when the user prefers reduced motion, as now.`
+  - ✅ `The spinner does not spin when the user prefers reduced motion.`
+- Every Done when check must be verifiable from the repo alone, not from an external link or tool.
+
 ## Boundaries
 
 ### Always
