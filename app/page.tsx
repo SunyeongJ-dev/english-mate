@@ -1,11 +1,32 @@
 "use client";
 
 import { useState } from "react";
-import { ViewState, Language, Result, createHistoryItem } from "@/app/lib/types";
+import {
+  ViewState,
+  Language,
+  Result,
+  REQUEST_FAILED_MESSAGE,
+  createHistoryItem,
+} from "@/app/lib/types";
 import Sidebar from "@/app/components/Sidebar";
 import LanguageSwitcher from "@/app/components/LanguageSwitcher";
 import PromptForm from "@/app/components/PromptForm";
 import ResultView from "@/app/components/ResultView";
+
+// An error whose message comes from /api/chat and is safe to show the user.
+class ReviewError extends Error {}
+
+function getErrorMessage(data: unknown): string {
+  if (
+    typeof data === "object" &&
+    data !== null &&
+    "error" in data &&
+    typeof data.error === "string"
+  ) {
+    return data.error;
+  }
+  return REQUEST_FAILED_MESSAGE;
+}
 
 export default function Home() {
   const [input, setInput] = useState("");
@@ -17,7 +38,6 @@ export default function Home() {
   ): Promise<void> {
     e.preventDefault();
     const text = input.trim();
-    if (!text) return;
     setState({ status: "loading" });
 
     try {
@@ -26,7 +46,9 @@ export default function Home() {
       const reviewedResult = createHistoryItem(text, result, language);
       setState({ status: "result", item: reviewedResult });
     } catch (error) {
-      setState({ status: "error", message: "An error occurred while processing your request." });
+      const message =
+        error instanceof ReviewError ? error.message : REQUEST_FAILED_MESSAGE;
+      setState({ status: "error", message });
       console.error("Error during requestReview:", error);
     }
   };
@@ -39,11 +61,14 @@ export default function Home() {
       },
       body: JSON.stringify({ input: message, language }),
     });
+    const data: unknown = await res.json().catch(() => null);
     if (!res.ok) {
-      throw new Error("Failed to fetch review");
+      throw new ReviewError(getErrorMessage(data));
     }
-    const data = await res.json();
-    return data;
+    if (data === null) {
+      throw new Error("The response body is not JSON");
+    }
+    return data as Result;
   }
 
     function handleNewSentence() {
@@ -65,6 +90,7 @@ export default function Home() {
               <ResultView
                 sentence={state.item.input}
                 result={state.item.result}
+                language={state.item.language}
                 onNew={handleNewSentence}
               />
             ) : (

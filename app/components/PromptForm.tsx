@@ -13,8 +13,6 @@ export default function PromptForm({
   isLoading = false,
   errorMessage,
 }: Props) {
-  const isEmpty = value.trim() === "";
-
   return (
     <form onSubmit={onSubmit} noValidate>
       <div className="flex items-end gap-2 rounded-xl border border-neutral-300 bg-neutral-100 p-2 focus-within:border-black">
@@ -45,7 +43,7 @@ export default function PromptForm({
         <button
           type="submit"
           aria-label={isLoading ? "Sending sentence" : "Send sentence"}
-          disabled={isEmpty || isLoading}
+          disabled={isLoading}
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-black text-white hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-neutral-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
         >
           {isLoading ? (
