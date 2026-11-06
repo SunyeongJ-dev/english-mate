@@ -1,14 +1,20 @@
-import { Result } from "@/app/lib/types";
+import { LEVEL_LABELS, Language, Result } from "@/app/lib/types";
 
 type Props = {
   sentence: string;
   result: Result;
+  language: Language;
   onNew: () => void;
 };
 
-export default function ResultView({ sentence, result, onNew }: Props) {
+export default function ResultView({
+  sentence,
+  result,
+  language,
+  onNew,
+}: Props) {
   const rows = [
-    { label: "Level", value: result.level },
+    { label: "Level", value: LEVEL_LABELS[language][result.level] },
     { label: "Formal", value: result.formal },
     { label: "Casual", value: result.casual },
     { label: "Note", value: result.note },
