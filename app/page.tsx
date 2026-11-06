@@ -46,9 +46,12 @@ export default function Home() {
       const reviewedResult = createHistoryItem(text, result, language);
       setState({ status: "result", item: reviewedResult });
     } catch (error) {
-      const message =
-        error instanceof ReviewError ? error.message : REQUEST_FAILED_MESSAGE;
-      setState({ status: "error", message });
+      if (error instanceof ReviewError) {
+        // An expected message from /api/chat. Show it without logging.
+        setState({ status: "error", message: error.message });
+        return;
+      }
+      setState({ status: "error", message: REQUEST_FAILED_MESSAGE });
       console.error("Error during requestReview:", error);
     }
   };
