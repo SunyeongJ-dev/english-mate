@@ -1,40 +1,91 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { LANGUAGES, LEVELS } from "@/app/lib/types";
+import {
+  EMPTY_INPUT_MESSAGE,
+  INVALID_INPUT_MESSAGE,
+  LANGUAGES,
+  LEVELS,
+  REQUEST_FAILED_MESSAGE,
+  TOO_LONG_MESSAGE,
+  Language,
+  Level,
+  Result,
+} from "@/app/lib/types";
 import { buildSystemPrompt } from "@/app/lib/prompt";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const MODEL = "claude-haiku-5-5";
 
-function validateResult(result: any): boolean {
-  if (
-    typeof result !== "object" ||
-    !result ||
-    !LEVELS.includes(result.level) ||
-    typeof result.formal !== "string" ||
-    typeof result.casual !== "string" ||
-    typeof result.note !== "string"
-  ) {
-    return false;
-  }
-  return true;
+const RESULT_KEYS = ["level", "formal", "casual", "note"] as const;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function hasExactKeys(
+  value: Record<string, unknown>,
+  keys: readonly string[],
+): boolean {
+  const actualKeys = Object.keys(value);
+  return (
+    actualKeys.length === keys.length &&
+    keys.every((key) => actualKeys.includes(key))
+  );
+}
+
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === "string" && value.trim() !== "";
+}
+
+function isLevel(value: unknown): value is Level {
+  return LEVELS.some((level) => level === value);
+}
+
+function isLanguage(value: unknown): value is Language {
+  return LANGUAGES.some((language) => language === value);
+}
+
+function isInvalidResponse(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    hasExactKeys(value, ["invalid"]) &&
+    value.invalid === true
+  );
+}
+
+function isResult(value: unknown): value is Result {
+  return (
+    isRecord(value) &&
+    hasExactKeys(value, RESULT_KEYS) &&
+    isLevel(value.level) &&
+    isNonEmptyString(value.formal) &&
+    isNonEmptyString(value.casual) &&
+    isNonEmptyString(value.note)
+  );
+}
+
+function failed(): Response {
+  return Response.json({ error: REQUEST_FAILED_MESSAGE }, { status: 500 });
 }
 
 export async function POST(req: Request) {
-  let body;
+  let body: unknown;
   try {
     body = await req.json();
   } catch {
     return Response.json({ error: "Invalid JSON" }, { status: 400 });
   }
+  if (!isRecord(body)) {
+    return Response.json({ error: "Invalid JSON" }, { status: 400 });
+  }
   const { input, language } = body;
 
   if (typeof input !== "string" || !input.trim()) {
-    return Response.json({ error: "Invalid input" }, { status: 400 });
+    return Response.json({ error: EMPTY_INPUT_MESSAGE }, { status: 400 });
   }
   if (input.length > 1000) {
-    return Response.json({ error: "Input is too long." }, { status: 400 });
+    return Response.json({ error: TOO_LONG_MESSAGE }, { status: 400 });
   }
-  if (!LANGUAGES.includes(language)) {
+  if (!isLanguage(language)) {
     return Response.json({ error: "Invalid language" }, { status: 400 });
   }
 
@@ -56,26 +107,25 @@ export async function POST(req: Request) {
       text = textBlock.text;
     }
   } catch (error) {
-    console.error(error);
-    return Response.json({ error: "An error occurred" }, { status: 500 });
+    console.error("Claude call failed:", error);
+    return failed();
   }
 
-  let result;
+  let result: unknown;
   try {
     result = JSON.parse(text);
   } catch (error) {
-    console.error("Failed to parse JSON:", error);
-    return Response.json(
-      { error: "Failed to parse response" },
-      { status: 500 },
-    );
+    console.error("Claude's response is not JSON:", error);
+    return failed();
   }
 
-  if (!validateResult(result)) {
-    return Response.json(
-      { error: "Invalid response format from AI" },
-      { status: 500 },
-    );
+  if (isInvalidResponse(result)) {
+    return Response.json({ error: INVALID_INPUT_MESSAGE }, { status: 400 });
+  }
+
+  if (!isResult(result)) {
+    console.error("Claude's response does not match the shape:", result);
+    return failed();
   }
 
   return Response.json({

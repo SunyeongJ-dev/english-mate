@@ -42,6 +42,8 @@ export const LEVEL_LABELS: Record<Language, Record<Level, string>> = {
   },
 };
 
+export const EMPTY_INPUT_MESSAGE = "Please enter your sentence.";
+export const TOO_LONG_MESSAGE = "Input is too long.";
 export const INVALID_INPUT_MESSAGE = "Please enter one English sentence.";
 export const REQUEST_FAILED_MESSAGE = "Something went wrong. Please try again.";
 
