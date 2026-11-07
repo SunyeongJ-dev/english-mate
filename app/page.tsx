@@ -104,10 +104,10 @@ export default function Home() {
             ) : (
               <>
                 <h1 className="text-2xl font-semibold tracking-tight">
-                  Give your sentence
+                  What do you want to say today?
                 </h1>
                 <p className="mt-1 mb-6 text-neutral-600">
-                  Write a sentence you want to practice.
+                  Write one English sentence to see how natural it sounds.
                 </p>
                 <PromptForm
                   value={input}
