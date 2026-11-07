@@ -16,7 +16,7 @@ export default function LanguageSwitcher({ value, onChange }: Props) {
     <div
       role="group"
       aria-label="Language"
-      className="inline-flex rounded-lg border border-neutral-300 p-0.5"
+      className="inline-flex rounded-lg border border-neutral-300 bg-white p-0.5"
     >
       {OPTIONS.map((option) => {
         const selected = option.value === value;
@@ -26,9 +26,9 @@ export default function LanguageSwitcher({ value, onChange }: Props) {
             type="button"
             aria-pressed={selected}
             onClick={() => onChange(option.value)}
-            className={`rounded-md px-3 py-1 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black ${
+            className={`rounded-md px-3 py-1 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${
               selected
-                ? "bg-black text-white"
+                ? "bg-blue-600 text-white"
                 : "text-neutral-600 hover:bg-neutral-100"
             }`}
           >

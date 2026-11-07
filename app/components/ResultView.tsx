@@ -38,7 +38,7 @@ export default function ResultView({
         <button
           type="button"
           onClick={onNew}
-          className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
         >
           New sentence
         </button>

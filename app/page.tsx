@@ -9,6 +9,7 @@ import {
   createHistoryItem,
 } from "@/app/lib/types";
 import Sidebar from "@/app/components/Sidebar";
+import LogoMark from "@/app/components/LogoMark";
 import LanguageSwitcher from "@/app/components/LanguageSwitcher";
 import PromptForm from "@/app/components/PromptForm";
 import ResultView from "@/app/components/ResultView";
@@ -79,11 +80,15 @@ export default function Home() {
   }
 
   return (
-    <div className="flex h-dvh bg-white text-neutral-900">
+    <div className="flex h-dvh">
       <Sidebar />
  
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex justify-end px-4 py-4 md:px-8">
+        <header className="flex items-center justify-between border-b border-blue-100 bg-blue-50 px-4 py-3 md:justify-end md:border-b-0 md:bg-white md:px-8 md:py-4">
+          <div className="flex items-center gap-2 md:hidden">
+            <LogoMark />
+            <span className="text-base font-semibold">English Mate</span>
+          </div>
           <LanguageSwitcher value={language} onChange={setLanguage} />
         </header>
  
