@@ -75,7 +75,15 @@ export default function Home() {
     return data as Result;
   }
 
-    function handleNewSentence() {
+  function handleInputChange(value: string) {
+    setInput(value);
+    // The error is about the old text, so hide it once the user edits.
+    if (state.status === "error") {
+      setState({ status: "waiting" });
+    }
+  }
+
+  function handleNewSentence() {
     setState({ status: "waiting" });
   }
 
@@ -111,7 +119,7 @@ export default function Home() {
                 </p>
                 <PromptForm
                   value={input}
-                  onChange={setInput}
+                  onChange={handleInputChange}
                   onSubmit={handleSubmit}
                   isLoading={state.status === "loading"}
                   errorMessage={

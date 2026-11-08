@@ -107,6 +107,15 @@ export default function PromptForm({
         Press Enter to check.
       </p>
 
+      {/* The live region stays on the page so screen readers announce new text. */}
+      <div aria-live="polite">
+        {isLoading && (
+          <p className="mt-2 text-sm text-neutral-600">
+            Checking your sentence...
+          </p>
+        )}
+      </div>
+
       {errorMessage && (
         <p id="sentence-error" role="alert" className="mt-2 text-sm text-red-600">
           {errorMessage}
