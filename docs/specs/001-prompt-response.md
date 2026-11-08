@@ -6,19 +6,19 @@ Claude returns one of two exact JSON shapes, one for valid input and one for inv
 
 ## In scope
 
-- [ ] For valid input, Claude returns only a JSON object with exactly these non-empty string fields: `level`, `formal`, `casual`, and `note`.
-- [ ] The prompt tells Claude never to leave `formal`, `casual`, or `note` empty. If one is empty, `app/api/chat/route.ts` treats the response as not matching the shape.
-- [ ] The prompt asks Claude to keep `note` to 5 sentences or fewer. `app/api/chat/route.ts` does not count sentences in `note`.
-- [ ] `level` is `natural`, `slightly_awkward`, or `awkward`. The app maps each value to a fixed display sentence.
-- [ ] For non-English, unclear, single-word, or multi-sentence input, Claude returns only `{"invalid": true}`.
-- [ ] Claude decides what counts as single-word input. A word that does not work as a sentence, like `apple`, is invalid. A one-word sentence, like `Thanks!` or `Stop.`, gets a level.
-- [ ] Claude decides what counts as unclear. Text that cannot be understood at all, like `sadafjkhw`, is unclear. A proper sentence with some structure gets a level, even if that level is `awkward`.
-- [ ] For invalid input, `app/api/chat/route.ts` returns status 400 and `{"error": "Please enter one English sentence."}`, and the app shows this fixed message. Claude never generates this message.
-- [ ] `Please enter one English sentence.` and `Something went wrong. Please try again.` are each defined once, as exported constants in `app/lib/types.ts`.
-- [ ] `app/api/chat/route.ts` catches empty input before calling Claude and returns `Please enter your sentence.` The app shows this message.
-- [ ] `app/api/chat/route.ts` returns status 400 and `Input is too long.` for input longer than 1000 characters, without calling Claude. The app shows this message.
-- [ ] A request body of `null` gets the same status 400 response as a body that is not valid JSON, and Claude is not called.
-- [ ] When the Claude call fails, or Claude's response is not JSON or matches neither shape, `app/api/chat/route.ts` returns status 500, `Something went wrong. Please try again.`, and no result. It does not retry. The app shows this message.
+- [x] For valid input, Claude returns only a JSON object with exactly these non-empty string fields: `level`, `formal`, `casual`, and `note`.
+- [x] The prompt tells Claude never to leave `formal`, `casual`, or `note` empty. If one is empty, `app/api/chat/route.ts` treats the response as not matching the shape.
+- [x] The prompt asks Claude to keep `note` to 5 sentences or fewer. `app/api/chat/route.ts` does not count sentences in `note`.
+- [x] `level` is `natural`, `slightly_awkward`, or `awkward`. The app maps each value to a fixed display sentence.
+- [x] For non-English, unclear, single-word, or multi-sentence input, Claude returns only `{"invalid": true}`.
+- [x] Claude decides what counts as single-word input. A word that does not work as a sentence, like `apple`, is invalid. A one-word sentence, like `Thanks!` or `Stop.`, gets a level.
+- [x] Claude decides what counts as unclear. Text that cannot be understood at all, like `sadafjkhw`, is unclear. A proper sentence with some structure gets a level, even if that level is `awkward`.
+- [x] For invalid input, `app/api/chat/route.ts` returns status 400 and `{"error": "Please enter one English sentence."}`, and the app shows this fixed message. Claude never generates this message.
+- [x] `Please enter one English sentence.` and `Something went wrong. Please try again.` are each defined once, as exported constants in `app/lib/types.ts`.
+- [x] `app/api/chat/route.ts` catches empty input before calling Claude and returns `Please enter your sentence.` The app shows this message.
+- [x] `app/api/chat/route.ts` returns status 400 and `Input is too long.` for input longer than 1000 characters, without calling Claude. The app shows this message.
+- [x] A request body of `null` gets the same status 400 response as a body that is not valid JSON, and Claude is not called.
+- [x] When the Claude call fails, or Claude's response is not JSON or matches neither shape, `app/api/chat/route.ts` returns status 500, `Something went wrong. Please try again.`, and no result. It does not retry. The app shows this message.
 
 ## Example responses
 

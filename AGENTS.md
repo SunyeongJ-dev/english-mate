@@ -29,6 +29,7 @@ English Mate helps English learners check their writing. The user enters one sen
   - ❌ `The spinner does not spin when the user prefers reduced motion, as now.`
   - ✅ `The spinner does not spin when the user prefers reduced motion.`
 - Every Done when check must be verifiable from the repo alone, not from an external link or tool.
+- Tick off a requirement in In scope only when the code meets it. Leave it unticked if only a browser can confirm it and no one has checked yet.
 
 ## Boundaries
 
