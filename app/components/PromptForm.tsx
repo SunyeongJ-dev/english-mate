@@ -51,7 +51,7 @@ export default function PromptForm({
             disabled={isLoading}
             aria-invalid={errorMessage ? true : undefined}
             aria-describedby={describedBy}
-            className="field-sizing-content min-h-12 flex-1 resize-none bg-transparent p-2 outline-none placeholder:text-neutral-500 disabled:text-neutral-500"
+            className="field-sizing-content min-h-12 flex-1 resize-none bg-neutral-100 p-2 outline-none placeholder:text-neutral-600 disabled:text-neutral-500"
           />
           <button
             type="submit"
@@ -95,7 +95,7 @@ export default function PromptForm({
           <p
             id="sentence-count"
             className={`px-2 pt-1 text-right text-xs ${
-              length > MAX_LENGTH ? "text-red-600" : "text-neutral-500"
+              length > MAX_LENGTH ? "text-red-700" : "text-neutral-600"
             }`}
           >
             {length} / {MAX_LENGTH}
