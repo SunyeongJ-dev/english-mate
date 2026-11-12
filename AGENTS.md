@@ -36,7 +36,7 @@ English Mate helps English learners check their writing. The user enters one sen
 ### Always
 
 - Run `pnpm run lint` and `pnpm run build` before saying a task is done.
-- Show me a plan before editing.
+- Always explain the plan before coding. Keep changes small. Explain why after each change.
 - Use pnpm, not npm or yarn.
 
 ### Ask first
