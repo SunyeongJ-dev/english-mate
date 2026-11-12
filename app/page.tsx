@@ -1,13 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  ViewState,
+  CheckState,
+  HistoryItem,
   Language,
   Result,
   REQUEST_FAILED_MESSAGE,
   createHistoryItem,
 } from "@/app/lib/types";
+import { addToHistory, loadHistory, saveHistory } from "@/app/lib/history";
 import Sidebar from "@/app/components/Sidebar";
 import LogoMark from "@/app/components/LogoMark";
 import LanguageSwitcher from "@/app/components/LanguageSwitcher";
@@ -31,28 +33,45 @@ function getErrorMessage(data: unknown): string {
 
 export default function Home() {
   const [input, setInput] = useState("");
-  const [state, setState] = useState<ViewState>({ status: "waiting" });
+  const [check, setCheck] = useState<CheckState>({ status: "idle" });
+  // The history item whose card is showing. null means the input screen.
+  const [openItem, setOpenItem] = useState<HistoryItem | null>(null);
   const [language, setLanguage] = useState<Language>("en");
+  const [history, setHistory] = useState<HistoryItem[]>([]);
+
+  // localStorage exists only in the browser, so read it after the first
+  // render. The server and the first client render both show an empty list.
+  useEffect(() => {
+    // This runs once on load, so the extra render the rule warns about is fine.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setHistory(loadHistory());
+  }, []);
 
   async function handleSubmit(
     e: React.SubmitEvent<HTMLFormElement>,
   ): Promise<void> {
     e.preventDefault();
+    if (check.status === "loading") return;
     const text = input.trim();
-    setState({ status: "loading" });
+    setCheck({ status: "loading" });
 
     try {
       const result = await requestReview(text);
+      const item = createHistoryItem(text, result, language);
+      const nextHistory = addToHistory(history, item);
+      setHistory(nextHistory);
+      saveHistory(nextHistory);
       setInput("");
-      const reviewedResult = createHistoryItem(text, result, language);
-      setState({ status: "result", item: reviewedResult });
+      setCheck({ status: "idle" });
+      // If the user opened a history item while waiting, keep that card.
+      setOpenItem((current) => current ?? item);
     } catch (error) {
       if (error instanceof ReviewError) {
         // An expected message from /api/chat. Show it without logging.
-        setState({ status: "error", message: error.message });
+        setCheck({ status: "error", message: error.message });
         return;
       }
-      setState({ status: "error", message: REQUEST_FAILED_MESSAGE });
+      setCheck({ status: "error", message: REQUEST_FAILED_MESSAGE });
       console.error("Error during requestReview:", error);
     }
   };
@@ -78,18 +97,27 @@ export default function Home() {
   function handleInputChange(value: string) {
     setInput(value);
     // The error is about the old text, so hide it once the user edits.
-    if (state.status === "error") {
-      setState({ status: "waiting" });
+    if (check.status === "error") {
+      setCheck({ status: "idle" });
     }
   }
 
   function handleNewSentence() {
-    setState({ status: "waiting" });
+    setOpenItem(null);
+    // A check that is still running keeps its sentence and loading state.
+    if (check.status !== "loading") {
+      setInput("");
+      setCheck({ status: "idle" });
+    }
   }
 
   return (
     <div className="flex h-dvh">
-      <Sidebar />
+      <Sidebar
+        items={history}
+        currentId={openItem?.id}
+        onSelect={setOpenItem}
+      />
  
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex items-center justify-between border-b border-blue-100 bg-blue-50 px-4 py-3 md:justify-end md:border-b-0 md:bg-white md:px-8 md:py-4">
@@ -102,11 +130,13 @@ export default function Home() {
  
         <main className="flex flex-1 flex-col overflow-y-auto px-4">
           <div className="m-auto w-full max-w-2xl py-4">
-            {state.status === "result" ? (
+            {openItem ? (
+              // The key remounts the card per item, so focus moves to it.
               <ResultView
-                sentence={state.item.input}
-                result={state.item.result}
-                language={state.item.language}
+                key={openItem.id}
+                sentence={openItem.input}
+                result={openItem.result}
+                language={openItem.language}
                 onNew={handleNewSentence}
               />
             ) : (
@@ -121,9 +151,9 @@ export default function Home() {
                   value={input}
                   onChange={handleInputChange}
                   onSubmit={handleSubmit}
-                  isLoading={state.status === "loading"}
+                  isLoading={check.status === "loading"}
                   errorMessage={
-                    state.status === "error" ? state.message : undefined
+                    check.status === "error" ? check.message : undefined
                   }
                 />
               </>

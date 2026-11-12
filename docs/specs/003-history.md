@@ -8,28 +8,28 @@ Every checked sentence and its feedback are saved in the browser's `localStorage
 
 ### Saving
 
-- [ ] When a check succeeds, the app saves the sentence, the result, and the language it was checked in to `localStorage`.
-- [ ] A check that ends in an error saves nothing.
-- [ ] History keeps the 50 newest items. Saving a 51st item drops the oldest one.
-- [ ] Checking the same sentence twice saves two items.
-- [ ] If the saved data is damaged, or `localStorage` is blocked or full, the app still checks sentences and shows results, and the user sees no error message.
+- [x] When a check succeeds, the app saves the sentence, the result, and the language it was checked in to `localStorage`.
+- [x] A check that ends in an error saves nothing.
+- [x] History keeps the 50 newest items. Saving a 51st item drops the oldest one.
+- [x] Checking the same sentence twice saves two items.
+- [x] If the saved data is damaged, or `localStorage` is blocked or full, the app still checks sentences and shows results, and the user sees no error message.
 
 ### Sidebar list
 
-- [ ] The sidebar lists the saved sentences, newest first. Each item shows its sentence only, on one line, cut off with an ellipsis when it is too long.
-- [ ] With no history, the sidebar shows `No chats yet`.
-- [ ] A new sentence appears at the top of the list as soon as its result shows.
-- [ ] After a reload, the sidebar shows the same items in the same order.
-- [ ] The list scrolls inside the sidebar when it is too tall.
+- [x] The sidebar lists the saved sentences, newest first. Each item shows its sentence only, on one line, cut off with an ellipsis when it is too long.
+- [x] With no history, the sidebar shows `No chats yet`.
+- [x] A new sentence appears at the top of the list as soon as its result shows.
+- [x] After a reload, the sidebar shows the same items in the same order.
+- [x] The list scrolls inside the sidebar when it is too tall.
 
 ### Opening an item
 
-- [ ] Clicking an item shows its result card with the saved sentence and feedback. The app does not call `/api/chat`.
-- [ ] The card uses the language the item was checked in, whatever language is selected in the switcher.
-- [ ] The item whose result is showing is highlighted with the `blue-100` background, and screen readers can tell it is the current one.
-- [ ] `New sentence` goes back to the input screen with an empty, focused textarea, and no item is highlighted.
-- [ ] If the user opens an item while a check is loading, that card stays on screen. When the check succeeds, its sentence is saved to the top of the list without opening.
-- [ ] The list works with the keyboard only, and every item shows a visible focus ring.
+- [x] Clicking an item shows its result card with the saved sentence and feedback. The app does not call `/api/chat`.
+- [x] The card uses the language the item was checked in, whatever language is selected in the switcher.
+- [x] The item whose result is showing is highlighted with the `blue-100` background, and screen readers can tell it is the current one.
+- [x] `New sentence` goes back to the input screen with an empty, focused textarea, and no item is highlighted.
+- [x] If the user opens an item while a check is loading, that card stays on screen. When the check succeeds, its sentence is saved to the top of the list without opening.
+- [x] The list works with the keyboard only, and every item shows a visible focus ring.
 
 ## Out of scope
 

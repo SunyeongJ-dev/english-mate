@@ -18,10 +18,11 @@ export type HistoryItem = {
   createdAt: string;
 };
 
-export type ViewState =
-  | { status: "waiting" }
+// The state of the check request. It is separate from what is on screen,
+// because a check keeps running while the user reads a history item.
+export type CheckState =
+  | { status: "idle" }
   | { status: "loading" }
-  | { status: "result"; item: HistoryItem }
   | { status: "error"; message: string };
 
 export const LEVEL_LABELS: Record<Language, Record<Level, string>> = {
