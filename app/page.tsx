@@ -11,6 +11,7 @@ import {
 } from "@/app/lib/types";
 import { addToHistory, loadHistory, saveHistory } from "@/app/lib/history";
 import Sidebar from "@/app/components/Sidebar";
+import HistoryDrawer from "@/app/components/HistoryDrawer";
 import LogoMark from "@/app/components/LogoMark";
 import LanguageSwitcher from "@/app/components/LanguageSwitcher";
 import PromptForm from "@/app/components/PromptForm";
@@ -38,6 +39,10 @@ export default function Home() {
   const [openItem, setOpenItem] = useState<HistoryItem | null>(null);
   const [language, setLanguage] = useState<Language>("en");
   const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  // Counts the picks from the history list. It is part of the result card's
+  // key, so picking the item that is already open moves focus to the card too.
+  const [selectCount, setSelectCount] = useState(0);
 
   // localStorage exists only in the browser, so read it after the first
   // render. The server and the first client render both show an empty list.
@@ -102,6 +107,11 @@ export default function Home() {
     }
   }
 
+  function handleSelectItem(item: HistoryItem) {
+    setOpenItem(item);
+    setSelectCount((count) => count + 1);
+  }
+
   function handleNewSentence() {
     setOpenItem(null);
     // A check that is still running keeps its sentence and loading state.
@@ -116,14 +126,43 @@ export default function Home() {
       <Sidebar
         items={history}
         currentId={openItem?.id}
-        onSelect={setOpenItem}
+        onSelect={handleSelectItem}
       />
- 
+      <HistoryDrawer
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        items={history}
+        currentId={openItem?.id}
+        onSelect={handleSelectItem}
+      />
+
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center justify-between border-b border-blue-100 bg-blue-50 px-4 py-3 md:justify-end md:border-b-0 md:bg-white md:px-8 md:py-4">
+        <header className="flex items-center justify-between border-b border-blue-100 bg-blue-50 px-4 py-1 md:justify-end md:border-b-0 md:bg-white md:px-8 md:py-4">
           <div className="flex items-center gap-2 md:hidden">
+            <button
+              type="button"
+              aria-label="Open history"
+              onClick={() => setDrawerOpen(true)}
+              className="-ml-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-neutral-600 hover:bg-blue-100 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-600"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                aria-hidden="true"
+              >
+                <path d="M4 7h16M4 12h16M4 17h16" />
+              </svg>
+            </button>
             <LogoMark />
-            <span className="text-base font-semibold">English Mate</span>
+            {/* Under 375px there is no room for the name next to the buttons. */}
+            <span className="hidden text-base font-semibold whitespace-nowrap min-[375px]:inline">
+              English Mate
+            </span>
           </div>
           <LanguageSwitcher value={language} onChange={setLanguage} />
         </header>
@@ -131,9 +170,9 @@ export default function Home() {
         <main className="flex flex-1 flex-col overflow-y-auto px-4">
           <div className="m-auto w-full max-w-2xl py-4">
             {openItem ? (
-              // The key remounts the card per item, so focus moves to it.
+              // The key remounts the card per pick, so focus moves to it.
               <ResultView
-                key={openItem.id}
+                key={`${openItem.id}-${selectCount}`}
                 sentence={openItem.input}
                 result={openItem.result}
                 language={openItem.language}
