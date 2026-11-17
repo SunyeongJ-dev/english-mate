@@ -11,6 +11,7 @@ import {
 } from "@/app/lib/types";
 import { TEXTS } from "@/app/lib/texts";
 import { addToHistory, loadHistory, saveHistory } from "@/app/lib/history";
+import { loadLanguage, saveLanguage } from "@/app/lib/language";
 import Sidebar from "@/app/components/Sidebar";
 import HistoryDrawer from "@/app/components/HistoryDrawer";
 import { HistoryListProps } from "@/app/components/HistoryList";
@@ -63,12 +64,25 @@ export default function Home() {
   }, [openItem]);
 
   // localStorage exists only in the browser, so read it after the first
-  // render. The server and the first client render both show an empty list.
+  // render. The server and the first client render both show an empty list
+  // in English.
   useEffect(() => {
     // This runs once on load, so the extra render the rule warns about is fine.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setHistory(loadHistory());
+    setLanguage(loadLanguage());
   }, []);
+
+  // The <html> tag is outside this component, so set its lang attribute here.
+  // Screen readers use it to pick the right pronunciation.
+  useEffect(() => {
+    document.documentElement.lang = language;
+  }, [language]);
+
+  function handleLanguageChange(next: Language) {
+    setLanguage(next);
+    saveLanguage(next);
+  }
 
   async function handleSubmit(
     e: React.SubmitEvent<HTMLFormElement>,
@@ -233,7 +247,7 @@ export default function Home() {
               English Mate
             </span>
           </div>
-          <LanguageSwitcher value={language} onChange={setLanguage} />
+          <LanguageSwitcher value={language} onChange={handleLanguageChange} />
         </header>
  
         <main className="flex flex-1 flex-col overflow-y-auto px-4">
