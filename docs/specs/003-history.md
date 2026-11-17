@@ -35,12 +35,13 @@ Every checked sentence and its feedback are saved in the browser's `localStorage
 
 - Showing history on mobile, where the sidebar is hidden (spec 004)
 - Showing a loading check, a new result, or a failed check in the sidebar (spec 005)
-- Deleting one item or clearing all history
+- Deleting one item (spec 007)
+- Clearing all history
 - Searching or filtering history
 - Showing the level, the date, or the language in a history item
 - Keeping history in sync between open tabs or between devices
 - Translating `No chats yet` (spec 006)
-- Dark mode (spec 007)
+- Dark mode (spec 008)
 
 ## Done when
 
@@ -49,7 +50,7 @@ Every checked sentence and its feedback are saved in the browser's `localStorage
 - Submitting `이것은 테스트입니다` shows `Please enter one English sentence.` and adds nothing to the sidebar.
 - After checking `I am agree with you` and then `Thanks!`, the sidebar shows `Thanks!` above `I am agree with you`. Reloading the page shows the same two items in the same order.
 - Clicking `I am agree with you` in the sidebar shows its card with the same formal sentence, casual sentence, and note as when it was checked, and the browser's network tab shows no new request to `/api/chat`.
-- An item checked in `KO` shows its level sentence in Korean when it is opened with `EN` selected.
+- An item checked in `KO` shows its note in Korean when it is opened with `EN` selected.
 - Clicking `New sentence` shows the input screen with an empty, focused textarea, and no sidebar item is highlighted.
 - With 50 items saved, checking one more keeps the list at 50, with the new sentence at the top and the oldest sentence gone.
 - After submitting `Stop.` and clicking `I am agree with you` before the result arrives, the `I am agree with you` card stays on screen. `Stop.` then appears at the top of the sidebar without opening.

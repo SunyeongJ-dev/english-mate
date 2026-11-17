@@ -48,7 +48,7 @@ When the user opens a history item while a check is loading, the check moves to 
 - Running more than one check at the same time
 - Keeping failed items or the bold state after a reload
 - A count of new items on the menu button
-- Removing a failed item without opening it
+- Removing a failed item without opening it (spec 007)
 - Translating the hidden text and the menu button's label (spec 006)
 
 ## Done when

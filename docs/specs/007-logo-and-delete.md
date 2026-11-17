@@ -8,28 +8,28 @@ Clicking the logo goes back to the input screen, like `New sentence`. The user c
 
 ### Logo button
 
-- [ ] The logo mark and the `English Mate` text next to it are one button. This is true in the desktop sidebar, the mobile header, and the mobile drawer.
-- [ ] Clicking it does the same as `New sentence`: the input screen shows with an empty, focused textarea, and no item is highlighted. While a check is loading, the input screen shows in its loading state with the submitted sentence.
-- [ ] In the drawer, clicking it also closes the drawer.
-- [ ] Screen readers get the name `English Mate` for the button, also when the text is hidden on a narrow window.
-- [ ] The button works with the keyboard and shows a visible focus ring.
+- [x] The logo mark and the `English Mate` text next to it are one button. This is true in the desktop sidebar, the mobile header, and the mobile drawer.
+- [x] Clicking it does the same as `New sentence`: the input screen shows with an empty, focused textarea, and no item is highlighted. While a check is loading, the input screen shows in its loading state with the submitted sentence.
+- [x] In the drawer, clicking it also closes the drawer.
+- [x] Screen readers get the name `English Mate` for the button, also when the text is hidden on a narrow window.
+- [x] The button works with the keyboard and shows a visible focus ring.
 
 ### Delete button
 
-- [ ] Every saved item and every failed item in the history list has a delete button with a trash icon at the right end of its row. A pending item has none.
-- [ ] In the desktop sidebar, the delete button shows only while the pointer is over the row or keyboard focus is in the row. In the mobile drawer, it always shows.
-- [ ] The icon is `neutral-600`, and `red-700` while the pointer is over the button.
-- [ ] The delete button works with the keyboard and shows a visible focus ring. Its `aria-label` is the text `Delete` in the selected language, then the item's sentence, like `Delete: Thanks!`.
+- [x] Every saved item and every failed item in the history list has a delete button with a trash icon at the right end of its row. A pending item has none.
+- [x] In the desktop sidebar, the delete button shows only while the pointer is over the row or keyboard focus is in the row. In the mobile drawer, it always shows.
+- [x] The icon is `neutral-600`, and `red-700` while the pointer is over the button.
+- [x] The delete button works with the keyboard and shows a visible focus ring. Its `aria-label` is the text `Delete` in the selected language, then the item's sentence, like `Delete: Thanks!`.
 
 ### Deleting
 
-- [ ] Clicking the delete button removes the item from the list right away, with no confirmation.
-- [ ] A deleted saved item is removed from `localStorage` and is still gone after a reload.
-- [ ] Deleting the item whose card is showing does the same as `New sentence`.
-- [ ] Deleting any other item does not change the main screen. In the drawer, the drawer stays open.
-- [ ] Deleting the last item shows the empty text of the list.
-- [ ] A failed item can be deleted while another check is loading.
-- [ ] The menu button's red dot goes away when the deleted item was the last bold or failed item.
+- [x] Clicking the delete button removes the item from the list right away, with no confirmation.
+- [x] A deleted saved item is removed from `localStorage` and is still gone after a reload.
+- [x] Deleting the item whose card is showing does the same as `New sentence`.
+- [x] Deleting any other item does not change the main screen. In the drawer, the drawer stays open.
+- [x] Deleting the last item shows the empty text of the list.
+- [x] A failed item can be deleted while another check is loading.
+- [x] The menu button's red dot goes away when the deleted item was the last bold or failed item.
 
 ## Text
 
