@@ -1,15 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
-import {
-  EMPTY_INPUT_MESSAGE,
-  INVALID_INPUT_MESSAGE,
-  LANGUAGES,
-  LEVELS,
-  REQUEST_FAILED_MESSAGE,
-  TOO_LONG_MESSAGE,
-  Language,
-  Level,
-  Result,
-} from "@/app/lib/types";
+import { LANGUAGES, LEVELS, Language, Level, Result } from "@/app/lib/types";
+import { TEXTS, Texts } from "@/app/lib/texts";
 import { buildSystemPrompt } from "@/app/lib/prompt";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -63,8 +54,8 @@ function isResult(value: unknown): value is Result {
   );
 }
 
-function failed(): Response {
-  return Response.json({ error: REQUEST_FAILED_MESSAGE }, { status: 500 });
+function failed(t: Texts): Response {
+  return Response.json({ error: t.requestFailed }, { status: 500 });
 }
 
 export async function POST(req: Request) {
@@ -78,12 +69,15 @@ export async function POST(req: Request) {
     return Response.json({ error: "Invalid JSON" }, { status: 400 });
   }
   const { input, language } = body;
+  // Error messages are in the request's language. A request with a missing
+  // or unknown language gets them in English.
+  const t = TEXTS[isLanguage(language) ? language : "en"];
 
   if (typeof input !== "string" || !input.trim()) {
-    return Response.json({ error: EMPTY_INPUT_MESSAGE }, { status: 400 });
+    return Response.json({ error: t.emptyInput }, { status: 400 });
   }
   if (input.length > 1000) {
-    return Response.json({ error: TOO_LONG_MESSAGE }, { status: 400 });
+    return Response.json({ error: t.tooLong }, { status: 400 });
   }
   if (!isLanguage(language)) {
     return Response.json({ error: "Invalid language" }, { status: 400 });
@@ -108,7 +102,7 @@ export async function POST(req: Request) {
     }
   } catch (error) {
     console.error("Claude call failed:", error);
-    return failed();
+    return failed(t);
   }
 
   let result: unknown;
@@ -116,16 +110,16 @@ export async function POST(req: Request) {
     result = JSON.parse(text);
   } catch (error) {
     console.error("Claude's response is not JSON:", error);
-    return failed();
+    return failed(t);
   }
 
   if (isInvalidResponse(result)) {
-    return Response.json({ error: INVALID_INPUT_MESSAGE }, { status: 400 });
+    return Response.json({ error: t.invalidInput }, { status: 400 });
   }
 
   if (!isResult(result)) {
     console.error("Claude's response does not match the shape:", result);
-    return failed();
+    return failed(t);
   }
 
   return Response.json({

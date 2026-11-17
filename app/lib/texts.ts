@@ -41,6 +41,13 @@ const en = {
   tooLong: "Input is too long.",
   invalidInput: "Please enter one English sentence.",
   requestFailed: "Something went wrong. Please try again.",
+
+  // The sentence a result card shows for each level
+  levels: {
+    natural: "This sounds natural.",
+    slightly_awkward: "This is a bit awkward.",
+    awkward: "This sounds quite awkward.",
+  },
 };
 
 // The other languages must have the same keys as English, so a missing
@@ -82,6 +89,12 @@ const fr: Texts = {
   tooLong: "Le texte est trop long.",
   invalidInput: "Veuillez saisir une seule phrase en anglais.",
   requestFailed: "Une erreur s'est produite. Veuillez réessayer.",
+
+  levels: {
+    natural: "Cette phrase est naturelle.",
+    slightly_awkward: "Cette phrase est un peu maladroite.",
+    awkward: "Cette phrase est assez maladroite.",
+  },
 };
 
 const ko: Texts = {
@@ -119,6 +132,12 @@ const ko: Texts = {
   tooLong: "문장이 너무 깁니다.",
   invalidInput: "하나의 영어 문장을 입력해 주세요.",
   requestFailed: "문제가 발생했습니다. 다시 시도해 주세요.",
+
+  levels: {
+    natural: "자연스러운 문장입니다.",
+    slightly_awkward: "약간 어색한 문장입니다.",
+    awkward: "꽤 어색한 문장입니다.",
+  },
 };
 
 export const TEXTS: Record<Language, Texts> = { en, fr, ko };

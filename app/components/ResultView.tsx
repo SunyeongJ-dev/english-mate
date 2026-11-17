@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
-import { LEVEL_LABELS, Language, Level, Result } from "@/app/lib/types";
+import { Language, Level, Result } from "@/app/lib/types";
+import { TEXTS } from "@/app/lib/texts";
 import CopyButton from "@/app/components/CopyButton";
 
 // Tailwind only finds class names written out in full, so each level lists its own.
@@ -76,7 +77,7 @@ export default function ResultView({
           >
             <path d={style.icon} />
           </svg>
-          {LEVEL_LABELS[language][result.level]}
+          {TEXTS[language].levels[result.level]}
         </p>
       </div>
 

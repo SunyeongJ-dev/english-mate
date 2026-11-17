@@ -68,7 +68,7 @@ The user picks English, French, or Korean, and the whole app speaks that languag
 | Please enter one English sentence.                       | Veuillez saisir une seule phrase en anglais.                     | 하나의 영어 문장을 입력해 주세요.                        |
 | Something went wrong. Please try again.                  | Une erreur s'est produite. Veuillez réessayer.                   | 문제가 발생했습니다. 다시 시도해 주세요.                 |
 
-The three level sentences are in `LEVEL_LABELS` in `app/lib/types.ts`.
+The three level sentences are in `levels` in `app/lib/texts.ts`.
 
 ## Out of scope
 
