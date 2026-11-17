@@ -8,29 +8,29 @@ The user picks English, French, or Korean, and the whole app speaks that languag
 
 ### Choosing a language
 
-- [ ] The language switcher offers `EN`, `FR`, and `KO`. A first-time visitor starts in `EN`.
-- [ ] The choice is saved in `localStorage` and is still selected after a reload.
-- [ ] If the saved choice is damaged or `localStorage` is blocked, the app starts in `EN` and shows no error message.
-- [ ] Switching the language changes the text on screen right away, without a reload.
-- [ ] The page's `lang` attribute matches the selected language.
+- [x] The language switcher offers `EN`, `FR`, and `KO`. A first-time visitor starts in `EN`.
+- [x] The choice is saved in `localStorage` and is still selected after a reload.
+- [x] If the saved choice is damaged or `localStorage` is blocked, the app starts in `EN` and shows no error message.
+- [x] Switching the language changes the text on screen right away, without a reload.
+- [x] The page's `lang` attribute matches the selected language.
 
 ### What is translated
 
-- [ ] Every text in the table in "Text" shows in the selected language. This includes text that only screen readers get, such as `aria-label` values.
-- [ ] Claude writes `note` in the language that was selected when the sentence was submitted. `formal` and `casual` are always in English.
-- [ ] Error messages show in the language that was selected when the sentence was submitted. This is true for messages from `app/api/chat/route.ts` and for the message the page shows when the request itself fails.
-- [ ] A request with a missing or unknown language gets its error message in English.
+- [x] Every text in the table in "Text" shows in the selected language. This includes text that only screen readers get, such as `aria-label` values.
+- [x] Claude writes `note` in the language that was selected when the sentence was submitted. `formal` and `casual` are always in English.
+- [x] Error messages show in the language that was selected when the sentence was submitted. This is true for messages from `app/api/chat/route.ts` and for the message the page shows when the request itself fails.
+- [x] A request with a missing or unknown language gets its error message in English.
 
 ### What keeps its language
 
-- [ ] A result card's `note` stays in the language its sentence was checked in. The card's labels, level sentence, and buttons follow the selected language like the rest of the screen.
-- [ ] An error message that is showing, and the message of a failed item in the history list, do not change when the user switches the language.
-- [ ] `English Mate`, the footer, the switcher's `EN`, `FR`, and `KO`, the user's own sentences, and the browser tab title and description are the same in every language.
+- [x] A result card's `note` stays in the language its sentence was checked in. The card's labels, level sentence, and buttons follow the selected language like the rest of the screen.
+- [x] An error message that is showing, and the message of a failed item in the history list, do not change when the user switches the language.
+- [x] `English Mate`, the footer, the switcher's `EN`, `FR`, and `KO`, the user's own sentences, and the browser tab title and description are the same in every language.
 
 ### Code
 
-- [ ] Each text is defined once per language, in one place. Components hold no user-visible text of their own.
-- [ ] A missing translation is a TypeScript error, not a blank on screen.
+- [x] Each text in the table is defined once per language, in one place. Components hold none of these texts themselves.
+- [x] A missing translation is a TypeScript error, not a blank on screen.
 
 ## Text
 
