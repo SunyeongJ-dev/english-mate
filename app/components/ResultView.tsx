@@ -38,6 +38,9 @@ export default function ResultView({
 }: Props) {
   const headingRef = useRef<HTMLHeadingElement>(null);
   const style = LEVEL_STYLES[result.level];
+  // The labels follow the selected language. The note is Claude's own text,
+  // so it stays in the language the sentence was checked in.
+  const t = TEXTS[language];
 
   // Move focus to the result so screen reader users hear it.
   useEffect(() => {
@@ -45,18 +48,18 @@ export default function ResultView({
   }, []);
 
   const alternatives = [
-    { label: "Formal", value: result.formal, copyLabel: "Copy formal sentence" },
-    { label: "Casual", value: result.casual, copyLabel: "Copy casual sentence" },
+    { label: t.formal, value: result.formal, copyLabel: t.copyFormal },
+    { label: t.casual, value: result.casual, copyLabel: t.copyCasual },
   ];
 
   return (
     <section className={`rounded-xl border p-4 md:p-6 ${style.card}`}>
       <h1 ref={headingRef} tabIndex={-1} className="sr-only">
-        Review result
+        {t.reviewResult}
       </h1>
 
       <div className="flex flex-col items-center gap-1.5 text-center">
-        <p className="text-sm font-medium text-neutral-600">Your sentence</p>
+        <p className="text-sm font-medium text-neutral-600">{t.yourSentence}</p>
         <p className="wrap-anywhere text-lg md:text-xl">“{sentence}”</p>
       </div>
 
@@ -77,7 +80,7 @@ export default function ResultView({
           >
             <path d={style.icon} />
           </svg>
-          {TEXTS[language].levels[result.level]}
+          {t.levels[result.level]}
         </p>
       </div>
 
@@ -89,12 +92,16 @@ export default function ResultView({
               <span className="min-w-0 whitespace-pre-wrap wrap-anywhere">
                 {row.value}
               </span>
-              <CopyButton text={row.value} label={row.copyLabel} />
+              <CopyButton
+                text={row.value}
+                label={row.copyLabel}
+                language={language}
+              />
             </dd>
           </div>
         ))}
         <div className="py-4">
-          <dt className="text-sm font-semibold text-neutral-600">Note</dt>
+          <dt className="text-sm font-semibold text-neutral-600">{t.note}</dt>
           <dd className="mt-1 whitespace-pre-wrap wrap-anywhere">{result.note}</dd>
         </div>
       </dl>
@@ -105,7 +112,7 @@ export default function ResultView({
           onClick={onNew}
           className="min-h-11 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
         >
-          New sentence
+          {t.newSentence}
         </button>
       </div>
     </section>

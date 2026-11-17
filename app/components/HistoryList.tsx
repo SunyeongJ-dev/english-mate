@@ -1,6 +1,8 @@
-import { FailedItem, HistoryItem } from "@/app/lib/types";
+import { FailedItem, HistoryItem, Language } from "@/app/lib/types";
+import { TEXTS } from "@/app/lib/texts";
 
 export type HistoryListProps = {
+  language: Language;
   items: HistoryItem[];
   currentId?: string;
   onSelect: (item: HistoryItem) => void;
@@ -23,6 +25,7 @@ const ROW_CLASS =
 
 // The history list. The desktop sidebar and the mobile drawer both show it.
 export default function HistoryList({
+  language,
   items,
   currentId,
   onSelect,
@@ -33,6 +36,7 @@ export default function HistoryList({
   onSelectFailed,
   unreadIds,
 }: HistoryListProps) {
+  const t = TEXTS[language];
   // Saved and failed items share one list, newest first, so a check keeps its
   // place when it finishes. ISO dates sort correctly as plain text.
   const entries: Entry[] = [
@@ -43,9 +47,12 @@ export default function HistoryList({
   const isEmpty = entries.length === 0 && pendingText === undefined;
 
   return (
-    <nav aria-label="Chat history" className="flex-1 overflow-y-auto px-2 pb-2">
+    <nav
+      aria-label={t.chatHistory}
+      className="flex-1 overflow-y-auto px-2 pb-2"
+    >
       {isEmpty ? (
-        <p className="px-2 py-2 text-sm text-neutral-600">No chats yet</p>
+        <p className="px-2 py-2 text-sm text-neutral-600">{t.noChats}</p>
       ) : (
         <ul className="flex flex-col gap-0.5">
           {pendingText !== undefined && (
@@ -69,7 +76,7 @@ export default function HistoryList({
                 >
                   <path d="M12 3a9 9 0 1 0 9 9" />
                 </svg>
-                <span className="sr-only">Checking</span>
+                <span className="sr-only">{t.checking}</span>
                 <span className="truncate">{pendingText}</span>
               </button>
             </li>
@@ -101,7 +108,7 @@ export default function HistoryList({
                     >
                       <path d="M12 4L2.5 20h19L12 4zM12 10v4M12 17h.01" />
                     </svg>
-                    <span className="sr-only">Check failed</span>
+                    <span className="sr-only">{t.checkFailed}</span>
                     <span className="truncate">{item.input}</span>
                   </button>
                 </li>
@@ -122,7 +129,7 @@ export default function HistoryList({
                     isUnread ? "font-semibold" : ""
                   }`}
                 >
-                  {isUnread && <span className="sr-only">New result</span>}
+                  {isUnread && <span className="sr-only">{t.newResult}</span>}
                   <span className="truncate">{item.input}</span>
                 </button>
               </li>

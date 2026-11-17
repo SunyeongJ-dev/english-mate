@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import LogoMark from "@/app/components/LogoMark";
 import HistoryList, { HistoryListProps } from "@/app/components/HistoryList";
+import { TEXTS } from "@/app/lib/texts";
 
 type Props = HistoryListProps & {
   open: boolean;
@@ -12,6 +13,7 @@ type Props = HistoryListProps & {
 // to the menu button when it closes.
 export default function HistoryDrawer({ open, onClose, ...list }: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const t = TEXTS[list.language];
 
   // Open or close the dialog to match the open prop.
   useEffect(() => {
@@ -43,7 +45,7 @@ export default function HistoryDrawer({ open, onClose, ...list }: Props) {
     // No display class here: a closed <dialog> must stay display: none.
     <dialog
       ref={dialogRef}
-      aria-label="History"
+      aria-label={t.history}
       onClose={onClose}
       onClick={(e) => {
         // A click on the backdrop lands on the dialog element itself.
@@ -59,7 +61,7 @@ export default function HistoryDrawer({ open, onClose, ...list }: Props) {
           </div>
           <button
             type="button"
-            aria-label="Close history"
+            aria-label={t.closeHistory}
             onClick={() => dialogRef.current?.close()}
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-neutral-600 hover:bg-blue-100 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-600"
           >

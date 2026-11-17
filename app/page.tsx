@@ -7,9 +7,9 @@ import {
   HistoryItem,
   Language,
   Result,
-  REQUEST_FAILED_MESSAGE,
   createHistoryItem,
 } from "@/app/lib/types";
+import { TEXTS } from "@/app/lib/texts";
 import { addToHistory, loadHistory, saveHistory } from "@/app/lib/history";
 import Sidebar from "@/app/components/Sidebar";
 import HistoryDrawer from "@/app/components/HistoryDrawer";
@@ -22,7 +22,9 @@ import ResultView from "@/app/components/ResultView";
 // An error whose message comes from /api/chat and is safe to show the user.
 class ReviewError extends Error {}
 
-function getErrorMessage(data: unknown): string {
+// Reads the message from an error response. The fallback is for a response
+// that has none.
+function getErrorMessage(data: unknown, fallback: string): string {
   if (
     typeof data === "object" &&
     data !== null &&
@@ -31,7 +33,7 @@ function getErrorMessage(data: unknown): string {
   ) {
     return data.error;
   }
-  return REQUEST_FAILED_MESSAGE;
+  return fallback;
 }
 
 export default function Home() {
@@ -40,6 +42,8 @@ export default function Home() {
   // The history item whose card is showing. null means the input screen.
   const [openItem, setOpenItem] = useState<HistoryItem | null>(null);
   const [language, setLanguage] = useState<Language>("en");
+  // The texts of the selected language.
+  const t = TEXTS[language];
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
   // Counts the picks from the history list. It is part of the keys of the
@@ -92,7 +96,9 @@ export default function Home() {
     } catch (error) {
       // A ReviewError carries an expected message from /api/chat.
       const isExpected = error instanceof ReviewError;
-      const message = isExpected ? error.message : REQUEST_FAILED_MESSAGE;
+      // This t is from the moment of the submit, so the message keeps that
+      // language even if the user has switched since.
+      const message = isExpected ? error.message : t.requestFailed;
       if (!isExpected) {
         console.error("Error during requestReview:", error);
       }
@@ -124,7 +130,7 @@ export default function Home() {
     });
     const data: unknown = await res.json().catch(() => null);
     if (!res.ok) {
-      throw new ReviewError(getErrorMessage(data));
+      throw new ReviewError(getErrorMessage(data, t.requestFailed));
     }
     if (data === null) {
       throw new Error("The response body is not JSON");
@@ -167,6 +173,7 @@ export default function Home() {
   const isLoading = check.status === "loading";
   // The sidebar and the drawer show the same list, so they get the same props.
   const listProps: HistoryListProps = {
+    language,
     items: history,
     currentId: openItem?.id,
     onSelect: handleSelectItem,
@@ -197,9 +204,7 @@ export default function Home() {
           <div className="flex items-center gap-2 md:hidden">
             <button
               type="button"
-              aria-label={
-                hasUpdate ? "Open history, new update" : "Open history"
-              }
+              aria-label={hasUpdate ? t.openHistoryUpdate : t.openHistory}
               onClick={() => setDrawerOpen(true)}
               className="relative -ml-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-neutral-600 hover:bg-blue-100 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-600"
             >
@@ -239,19 +244,18 @@ export default function Home() {
                 key={`${openItem.id}-${selectCount}`}
                 sentence={openItem.input}
                 result={openItem.result}
-                language={openItem.language}
+                language={language}
                 onNew={handleNewSentence}
               />
             ) : (
               <>
                 <h1 className="text-2xl font-semibold tracking-tight">
-                  What do you want to say today?
+                  {t.heading}
                 </h1>
-                <p className="mt-1 mb-6 text-neutral-600">
-                  Write one English sentence to see how natural it sounds.
-                </p>
+                <p className="mt-1 mb-6 text-neutral-600">{t.intro}</p>
                 <PromptForm
                   key={selectCount}
+                  language={language}
                   value={input}
                   onChange={handleInputChange}
                   onSubmit={handleSubmit}

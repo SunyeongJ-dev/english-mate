@@ -1,7 +1,11 @@
+import { Language } from "@/app/lib/types";
+import { TEXTS } from "@/app/lib/texts";
+
 const MAX_LENGTH = 1000;
 const COUNTER_FROM = 900;
 
 type Props = {
+  language: Language;
   value: string;
   onChange: (value: string) => void;
   onSubmit: (e: React.SubmitEvent<HTMLFormElement>) => void;
@@ -10,12 +14,14 @@ type Props = {
 };
 
 export default function PromptForm({
+  language,
   value,
   onChange,
   onSubmit,
   isLoading = false,
   errorMessage,
 }: Props) {
+  const t = TEXTS[language];
   // Count the same trimmed text the page sends to the route.
   const length = value.trim().length;
   const showCounter = length > COUNTER_FROM;
@@ -29,7 +35,7 @@ export default function PromptForm({
       <div className="rounded-xl border border-neutral-300 bg-neutral-100 p-2 focus-within:border-blue-600">
         <div className="flex items-end gap-2">
           <label htmlFor="sentence" className="sr-only">
-            Your sentence
+            {t.yourSentence}
           </label>
           <textarea
             id="sentence"
@@ -47,7 +53,7 @@ export default function PromptForm({
               }
             }}
             rows={2}
-            placeholder="Type your sentence here..."
+            placeholder={t.placeholder}
             disabled={isLoading}
             aria-invalid={errorMessage ? true : undefined}
             aria-describedby={describedBy}
@@ -55,7 +61,7 @@ export default function PromptForm({
           />
           <button
             type="submit"
-            aria-label={isLoading ? "Sending sentence" : "Send sentence"}
+            aria-label={isLoading ? t.sending : t.send}
             disabled={isLoading}
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-neutral-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
           >
@@ -104,15 +110,13 @@ export default function PromptForm({
       </div>
 
       <p className="mt-2 hidden text-sm text-neutral-500 md:block">
-        Press Enter to check.
+        {t.enterHint}
       </p>
 
       {/* The live region stays on the page so screen readers announce new text. */}
       <div aria-live="polite">
         {isLoading && (
-          <p className="mt-2 text-sm text-neutral-600">
-            Checking your sentence...
-          </p>
+          <p className="mt-2 text-sm text-neutral-600">{t.checkingSentence}</p>
         )}
       </div>
 

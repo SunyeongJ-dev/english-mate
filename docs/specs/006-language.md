@@ -23,7 +23,7 @@ The user picks English, French, or Korean, and the whole app speaks that languag
 
 ### What keeps its language
 
-- [ ] A result card is in one language from top to bottom: the language its sentence was checked in. Its labels, its level sentence, its note, and its buttons do not change when the user switches the language.
+- [ ] A result card's `note` stays in the language its sentence was checked in. The card's labels, level sentence, and buttons follow the selected language like the rest of the screen.
 - [ ] An error message that is showing, and the message of a failed item in the history list, do not change when the user switches the language.
 - [ ] `English Mate`, the footer, the switcher's `EN`, `FR`, and `KO`, the user's own sentences, and the browser tab title and description are the same in every language.
 
@@ -75,7 +75,7 @@ The three level sentences are in `levels` in `app/lib/texts.ts`.
 - Languages other than English, French, and Korean
 - Picking the first language from the browser's settings
 - Translating the browser tab title and description
-- Translating saved history: an old result keeps the language it was checked in
+- Translating the `note` of a saved result: it keeps the language it was checked in
 - Checking sentences in a language other than English
 - Dark mode (spec 007)
 
@@ -84,7 +84,7 @@ The three level sentences are in `levels` in `app/lib/texts.ts`.
 - On a first visit, `EN` is selected and the heading says `What do you want to say today?`
 - Clicking `KO` changes the heading to `오늘은 어떤 말을 하고 싶으세요?` and the sidebar's empty text to `기록된 대화가 없습니다`, without a reload. Reloading keeps `KO` selected.
 - With `KO` selected, submitting `I am agree with you` shows a card with the labels `내 문장`, `격식 표현`, `비격식 표현`, and `설명`, a note in Korean, and formal and casual sentences in English.
-- With that card showing, clicking `FR` does not change the card, and its button still says `새 문장`. After clicking that button, the input screen is in French.
+- With that card showing, clicking `FR` changes its labels to `Votre phrase`, `Formel`, `Familier`, and `Remarque`, and its button to `Nouvelle phrase`. The note stays in Korean.
 - With `FR` selected, submitting `이것은 테스트입니다` shows `Veuillez saisir une seule phrase en anglais.`
 - With `KO` selected, submitting an empty input shows `문장을 입력해 주세요.`, and submitting 1001 characters shows `문장이 너무 깁니다.`
 - With `KO` selected and the network turned off in the browser's developer tools, submitting a sentence shows `문제가 발생했습니다. 다시 시도해 주세요.`

@@ -1,22 +1,25 @@
 import { useEffect, useState } from "react";
+import { Language } from "@/app/lib/types";
+import { TEXTS } from "@/app/lib/texts";
 
 type Status = "idle" | "copied" | "failed";
-
-const STATUS_TEXT: Record<Status, string> = {
-  idle: "",
-  copied: "Copied",
-  failed: "Couldn't copy",
-};
 
 type Props = {
   text: string;
   label: string;
+  language: Language;
 };
 
-export default function CopyButton({ text, label }: Props) {
+export default function CopyButton({ text, label, language }: Props) {
   const [status, setStatus] = useState<Status>("idle");
+  const t = TEXTS[language];
+  const statusText: Record<Status, string> = {
+    idle: "",
+    copied: t.copied,
+    failed: t.copyFailed,
+  };
 
-  // Show "Copied" or "Couldn't copy" for 2 seconds.
+  // Show the copied or failed text for 2 seconds.
   useEffect(() => {
     if (status === "idle") return;
     const timer = setTimeout(() => setStatus("idle"), 2000);
@@ -41,7 +44,7 @@ export default function CopyButton({ text, label }: Props) {
           status === "failed" ? "text-red-600" : "text-neutral-600"
         }`}
       >
-        {STATUS_TEXT[status]}
+        {statusText[status]}
       </span>
       <button
         type="button"

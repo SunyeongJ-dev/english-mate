@@ -25,7 +25,7 @@ Every checked sentence and its feedback are saved in the browser's `localStorage
 ### Opening an item
 
 - [x] Clicking an item shows its result card with the saved sentence and feedback. The app does not call `/api/chat`.
-- [x] The card uses the language the item was checked in, whatever language is selected in the switcher.
+- [x] The card's `note` is in the language the item was checked in, whatever language is selected in the switcher.
 - [x] The item whose result is showing is highlighted with the `blue-100` background, and screen readers can tell it is the current one.
 - [x] `New sentence` goes back to the input screen with an empty, focused textarea, and no item is highlighted.
 - [x] If the user opens an item while a check is loading, that card stays on screen. When the check succeeds, its sentence is saved to the top of the list without opening.

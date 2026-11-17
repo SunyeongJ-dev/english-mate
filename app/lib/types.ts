@@ -34,8 +34,6 @@ export type FailedItem = {
   createdAt: string;
 };
 
-export const REQUEST_FAILED_MESSAGE = "Something went wrong. Please try again.";
-
 export function createHistoryItem(
   input: string,
   result: Result,

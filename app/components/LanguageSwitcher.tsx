@@ -1,4 +1,5 @@
 import { Language } from "@/app/lib/types";
+import { TEXTS } from "@/app/lib/texts";
 
 const OPTIONS: { value: Language; label: string }[] = [
   { value: "en", label: "EN" },
@@ -15,7 +16,7 @@ export default function LanguageSwitcher({ value, onChange }: Props) {
   return (
     <div
       role="group"
-      aria-label="Language"
+      aria-label={TEXTS[value].language}
       className="inline-flex rounded-lg border border-neutral-300 bg-white p-0.5"
     >
       {OPTIONS.map((option) => {
