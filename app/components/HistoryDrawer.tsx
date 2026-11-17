@@ -1,26 +1,16 @@
 import { useEffect, useRef } from "react";
-import { HistoryItem } from "@/app/lib/types";
 import LogoMark from "@/app/components/LogoMark";
-import HistoryList from "@/app/components/HistoryList";
+import HistoryList, { HistoryListProps } from "@/app/components/HistoryList";
 
-type Props = {
+type Props = HistoryListProps & {
   open: boolean;
   onClose: () => void;
-  items: HistoryItem[];
-  currentId?: string;
-  onSelect: (item: HistoryItem) => void;
 };
 
 // The history list on mobile. A <dialog> opened with showModal() keeps focus
 // inside, closes on Escape, blocks the page behind it, and gives focus back
 // to the menu button when it closes.
-export default function HistoryDrawer({
-  open,
-  onClose,
-  items,
-  currentId,
-  onSelect,
-}: Props) {
+export default function HistoryDrawer({ open, onClose, ...list }: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   // Open or close the dialog to match the open prop.
@@ -42,11 +32,11 @@ export default function HistoryDrawer({
     return () => desktop.removeEventListener("change", handleChange);
   }, [open, onClose]);
 
-  function handleSelect(item: HistoryItem) {
-    // Close first. Closing gives focus back to the menu button, and the
-    // result card takes focus after that.
+  // Runs a pick from the list after closing the drawer. Closing gives focus
+  // back to the menu button, and what the pick opens takes focus after that.
+  function closeThen(pick: () => void) {
     dialogRef.current?.close();
-    onSelect(item);
+    pick();
   }
 
   return (
@@ -88,7 +78,12 @@ export default function HistoryDrawer({
           </button>
         </div>
 
-        <HistoryList items={items} currentId={currentId} onSelect={handleSelect} />
+        <HistoryList
+          {...list}
+          onSelect={(item) => closeThen(() => list.onSelect(item))}
+          onSelectPending={() => closeThen(list.onSelectPending)}
+          onSelectFailed={(item) => closeThen(() => list.onSelectFailed(item))}
+        />
       </div>
     </dialog>
   );

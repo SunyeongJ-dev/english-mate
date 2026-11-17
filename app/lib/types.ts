@@ -22,8 +22,17 @@ export type HistoryItem = {
 // because a check keeps running while the user reads a history item.
 export type CheckState =
   | { status: "idle" }
-  | { status: "loading" }
+  | { status: "loading"; text: string }
   | { status: "error"; message: string };
+
+// A check that failed while the user was reading a history item. It lives in
+// memory only and is never saved to localStorage.
+export type FailedItem = {
+  id: string;
+  input: string;
+  message: string;
+  createdAt: string;
+};
 
 export const LEVEL_LABELS: Record<Language, Record<Level, string>> = {
   en: {

@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   CheckState,
+  FailedItem,
   HistoryItem,
   Language,
   Result,
@@ -12,6 +13,7 @@ import {
 import { addToHistory, loadHistory, saveHistory } from "@/app/lib/history";
 import Sidebar from "@/app/components/Sidebar";
 import HistoryDrawer from "@/app/components/HistoryDrawer";
+import { HistoryListProps } from "@/app/components/HistoryList";
 import LogoMark from "@/app/components/LogoMark";
 import LanguageSwitcher from "@/app/components/LanguageSwitcher";
 import PromptForm from "@/app/components/PromptForm";
@@ -40,9 +42,21 @@ export default function Home() {
   const [language, setLanguage] = useState<Language>("en");
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  // Counts the picks from the history list. It is part of the result card's
-  // key, so picking the item that is already open moves focus to the card too.
+  // Counts the picks from the history list. It is part of the keys of the
+  // result card and the form, so every pick moves focus to what it opens.
   const [selectCount, setSelectCount] = useState(0);
+  // Checks that failed while a history card was showing.
+  const [failedItems, setFailedItems] = useState<FailedItem[]>([]);
+  // Saved results that arrived while a history card was showing and that the
+  // user has not opened yet.
+  const [unreadIds, setUnreadIds] = useState<string[]>([]);
+
+  // handleSubmit continues seconds after it starts, and by then its own
+  // openItem is out of date. The ref always holds the latest value.
+  const openItemRef = useRef(openItem);
+  useEffect(() => {
+    openItemRef.current = openItem;
+  }, [openItem]);
 
   // localStorage exists only in the browser, so read it after the first
   // render. The server and the first client render both show an empty list.
@@ -58,7 +72,7 @@ export default function Home() {
     e.preventDefault();
     if (check.status === "loading") return;
     const text = input.trim();
-    setCheck({ status: "loading" });
+    setCheck({ status: "loading", text });
 
     try {
       const result = await requestReview(text);
@@ -68,16 +82,35 @@ export default function Home() {
       saveHistory(nextHistory);
       setInput("");
       setCheck({ status: "idle" });
-      // If the user opened a history item while waiting, keep that card.
-      setOpenItem((current) => current ?? item);
+      if (openItemRef.current === null) {
+        // The user waited on the input screen, so open the result.
+        setOpenItem(item);
+      } else {
+        // The user is reading a history card. Keep it and mark the result new.
+        setUnreadIds((ids) => [...ids, item.id]);
+      }
     } catch (error) {
-      if (error instanceof ReviewError) {
-        // An expected message from /api/chat. Show it without logging.
-        setCheck({ status: "error", message: error.message });
+      // A ReviewError carries an expected message from /api/chat.
+      const isExpected = error instanceof ReviewError;
+      const message = isExpected ? error.message : REQUEST_FAILED_MESSAGE;
+      if (!isExpected) {
+        console.error("Error during requestReview:", error);
+      }
+      if (openItemRef.current === null) {
+        setCheck({ status: "error", message });
         return;
       }
-      setCheck({ status: "error", message: REQUEST_FAILED_MESSAGE });
-      console.error("Error during requestReview:", error);
+      // The user is reading a history card. Keep the failure in the list, so
+      // they can open it later.
+      const failed: FailedItem = {
+        id: crypto.randomUUID(),
+        input: text,
+        message,
+        createdAt: new Date().toISOString(),
+      };
+      setFailedItems((items) => [failed, ...items]);
+      setInput("");
+      setCheck({ status: "idle" });
     }
   };
 
@@ -110,6 +143,16 @@ export default function Home() {
   function handleSelectItem(item: HistoryItem) {
     setOpenItem(item);
     setSelectCount((count) => count + 1);
+    setUnreadIds((ids) => ids.filter((id) => id !== item.id));
+  }
+
+  // Opens a failed check again on the input screen, ready to fix and resend.
+  function handleSelectFailed(failed: FailedItem) {
+    setOpenItem(null);
+    setSelectCount((count) => count + 1);
+    setInput(failed.input);
+    setCheck({ status: "error", message: failed.message });
+    setFailedItems((items) => items.filter((item) => item.id !== failed.id));
   }
 
   function handleNewSentence() {
@@ -121,19 +164,32 @@ export default function Home() {
     }
   }
 
+  const isLoading = check.status === "loading";
+  // The sidebar and the drawer show the same list, so they get the same props.
+  const listProps: HistoryListProps = {
+    items: history,
+    currentId: openItem?.id,
+    onSelect: handleSelectItem,
+    // The check shows in the list only while a history card hides the form.
+    pendingText: isLoading && openItem !== null ? check.text : undefined,
+    onSelectPending: handleNewSentence,
+    failedItems,
+    failedDisabled: isLoading,
+    onSelectFailed: handleSelectFailed,
+    unreadIds,
+  };
+  // The menu button shows a dot while the list has something new to open.
+  const hasUpdate =
+    failedItems.length > 0 ||
+    history.some((item) => unreadIds.includes(item.id));
+
   return (
     <div className="flex h-dvh">
-      <Sidebar
-        items={history}
-        currentId={openItem?.id}
-        onSelect={handleSelectItem}
-      />
+      <Sidebar {...listProps} />
       <HistoryDrawer
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
-        items={history}
-        currentId={openItem?.id}
-        onSelect={handleSelectItem}
+        {...listProps}
       />
 
       <div className="flex min-w-0 flex-1 flex-col">
@@ -141,9 +197,11 @@ export default function Home() {
           <div className="flex items-center gap-2 md:hidden">
             <button
               type="button"
-              aria-label="Open history"
+              aria-label={
+                hasUpdate ? "Open history, new update" : "Open history"
+              }
               onClick={() => setDrawerOpen(true)}
-              className="-ml-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-neutral-600 hover:bg-blue-100 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-600"
+              className="relative -ml-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-neutral-600 hover:bg-blue-100 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-600"
             >
               <svg
                 width="20"
@@ -157,6 +215,12 @@ export default function Home() {
               >
                 <path d="M4 7h16M4 12h16M4 17h16" />
               </svg>
+              {hasUpdate && (
+                <span
+                  aria-hidden="true"
+                  className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-600"
+                />
+              )}
             </button>
             <LogoMark />
             {/* Under 375px there is no room for the name next to the buttons. */}
@@ -187,10 +251,11 @@ export default function Home() {
                   Write one English sentence to see how natural it sounds.
                 </p>
                 <PromptForm
+                  key={selectCount}
                   value={input}
                   onChange={handleInputChange}
                   onSubmit={handleSubmit}
-                  isLoading={check.status === "loading"}
+                  isLoading={isLoading}
                   errorMessage={
                     check.status === "error" ? check.message : undefined
                   }
