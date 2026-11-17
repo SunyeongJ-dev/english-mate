@@ -1,17 +1,23 @@
 import { useEffect, useRef } from "react";
-import LogoMark from "@/app/components/LogoMark";
+import LogoButton from "@/app/components/LogoButton";
 import HistoryList, { HistoryListProps } from "@/app/components/HistoryList";
 import { TEXTS } from "@/app/lib/texts";
 
 type Props = HistoryListProps & {
   open: boolean;
   onClose: () => void;
+  onLogoClick: () => void;
 };
 
 // The history list on mobile. A <dialog> opened with showModal() keeps focus
 // inside, closes on Escape, blocks the page behind it, and gives focus back
 // to the menu button when it closes.
-export default function HistoryDrawer({ open, onClose, ...list }: Props) {
+export default function HistoryDrawer({
+  open,
+  onClose,
+  onLogoClick,
+  ...list
+}: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const t = TEXTS[list.language];
 
@@ -54,11 +60,11 @@ export default function HistoryDrawer({ open, onClose, ...list }: Props) {
       className="m-0 h-dvh max-h-none w-64 border-0 border-r border-blue-100 bg-blue-50 p-0 text-neutral-900 backdrop:bg-neutral-900/40 md:hidden"
     >
       <div className="flex h-full flex-col">
-        <div className="flex items-center justify-between gap-2 py-2 pr-2 pl-4">
-          <div className="flex items-center gap-2.5">
-            <LogoMark />
-            <span className="text-lg font-semibold">English Mate</span>
-          </div>
+        <div className="flex items-center justify-between gap-2 p-2">
+          <LogoButton
+            onClick={() => closeThen(onLogoClick)}
+            textClassName="text-lg"
+          />
           <button
             type="button"
             aria-label={t.closeHistory}

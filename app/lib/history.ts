@@ -51,3 +51,11 @@ export function addToHistory(
 ): HistoryItem[] {
   return [item, ...items].slice(0, MAX_HISTORY);
 }
+
+// Returns a new list without the item that has this id.
+export function removeFromHistory(
+  items: HistoryItem[],
+  id: string,
+): HistoryItem[] {
+  return items.filter((item) => item.id !== id);
+}

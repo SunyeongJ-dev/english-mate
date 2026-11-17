@@ -34,6 +34,7 @@ const en = {
   checking: "Checking",
   newResult: "New result",
   checkFailed: "Check failed",
+  deleteItem: "Delete",
   language: "Language",
 
   // Error messages
@@ -83,6 +84,7 @@ const fr: Texts = {
   checking: "Vérification en cours",
   newResult: "Nouveau résultat",
   checkFailed: "Échec de la vérification",
+  deleteItem: "Supprimer",
   language: "Langue",
 
   emptyInput: "Veuillez saisir votre phrase.",
@@ -126,6 +128,7 @@ const ko: Texts = {
   checking: "검사 중",
   newResult: "새 결과",
   checkFailed: "검사 실패",
+  deleteItem: "삭제",
   language: "언어",
 
   emptyInput: "문장을 입력해 주세요.",

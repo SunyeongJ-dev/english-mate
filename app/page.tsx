@@ -10,12 +10,17 @@ import {
   createHistoryItem,
 } from "@/app/lib/types";
 import { TEXTS } from "@/app/lib/texts";
-import { addToHistory, loadHistory, saveHistory } from "@/app/lib/history";
+import {
+  addToHistory,
+  loadHistory,
+  removeFromHistory,
+  saveHistory,
+} from "@/app/lib/history";
 import { loadLanguage, saveLanguage } from "@/app/lib/language";
 import Sidebar from "@/app/components/Sidebar";
 import HistoryDrawer from "@/app/components/HistoryDrawer";
 import { HistoryListProps } from "@/app/components/HistoryList";
-import LogoMark from "@/app/components/LogoMark";
+import LogoButton from "@/app/components/LogoButton";
 import LanguageSwitcher from "@/app/components/LanguageSwitcher";
 import PromptForm from "@/app/components/PromptForm";
 import ResultView from "@/app/components/ResultView";
@@ -47,9 +52,10 @@ export default function Home() {
   const t = TEXTS[language];
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  // Counts the picks from the history list. It is part of the keys of the
-  // result card and the form, so every pick moves focus to what it opens.
-  const [selectCount, setSelectCount] = useState(0);
+  // Goes up each time focus must move to the result card or the form: on a
+  // pick from the history list, and on a click on the logo. It is part of
+  // their keys, so React builds them again and the new one takes focus.
+  const [focusCount, setFocusCount] = useState(0);
   // Checks that failed while a history card was showing.
   const [failedItems, setFailedItems] = useState<FailedItem[]>([]);
   // Saved results that arrived while a history card was showing and that the
@@ -57,11 +63,14 @@ export default function Home() {
   const [unreadIds, setUnreadIds] = useState<string[]>([]);
 
   // handleSubmit continues seconds after it starts, and by then its own
-  // openItem is out of date. The ref always holds the latest value.
+  // openItem and history are out of date: the user may have opened or deleted
+  // an item in between. The refs always hold the latest values.
   const openItemRef = useRef(openItem);
+  const historyRef = useRef(history);
   useEffect(() => {
     openItemRef.current = openItem;
-  }, [openItem]);
+    historyRef.current = history;
+  }, [openItem, history]);
 
   // localStorage exists only in the browser, so read it after the first
   // render. The server and the first client render both show an empty list
@@ -95,7 +104,7 @@ export default function Home() {
     try {
       const result = await requestReview(text);
       const item = createHistoryItem(text, result, language);
-      const nextHistory = addToHistory(history, item);
+      const nextHistory = addToHistory(historyRef.current, item);
       setHistory(nextHistory);
       saveHistory(nextHistory);
       setInput("");
@@ -162,14 +171,14 @@ export default function Home() {
 
   function handleSelectItem(item: HistoryItem) {
     setOpenItem(item);
-    setSelectCount((count) => count + 1);
+    setFocusCount((count) => count + 1);
     setUnreadIds((ids) => ids.filter((id) => id !== item.id));
   }
 
   // Opens a failed check again on the input screen, ready to fix and resend.
   function handleSelectFailed(failed: FailedItem) {
     setOpenItem(null);
-    setSelectCount((count) => count + 1);
+    setFocusCount((count) => count + 1);
     setInput(failed.input);
     setCheck({ status: "error", message: failed.message });
     setFailedItems((items) => items.filter((item) => item.id !== failed.id));
@@ -182,6 +191,28 @@ export default function Home() {
       setInput("");
       setCheck({ status: "idle" });
     }
+  }
+
+  function handleDeleteItem(item: HistoryItem) {
+    const nextHistory = removeFromHistory(history, item.id);
+    setHistory(nextHistory);
+    saveHistory(nextHistory);
+    setUnreadIds((ids) => ids.filter((id) => id !== item.id));
+    // The card of a deleted item cannot stay on screen.
+    if (openItem?.id === item.id) {
+      handleNewSentence();
+    }
+  }
+
+  function handleDeleteFailed(failed: FailedItem) {
+    setFailedItems((items) => items.filter((item) => item.id !== failed.id));
+  }
+
+  // The logo does the same as New sentence. The count remounts the form, so
+  // the textarea takes focus even when the input screen is already showing.
+  function handleLogoClick() {
+    handleNewSentence();
+    setFocusCount((count) => count + 1);
   }
 
   const isLoading = check.status === "loading";
@@ -198,6 +229,8 @@ export default function Home() {
     failedDisabled: isLoading,
     onSelectFailed: handleSelectFailed,
     unreadIds,
+    onDelete: handleDeleteItem,
+    onDeleteFailed: handleDeleteFailed,
   };
   // The menu button shows a dot while the list has something new to open.
   const hasUpdate =
@@ -206,16 +239,17 @@ export default function Home() {
 
   return (
     <div className="flex h-dvh">
-      <Sidebar {...listProps} />
+      <Sidebar onLogoClick={handleLogoClick} {...listProps} />
       <HistoryDrawer
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
+        onLogoClick={handleLogoClick}
         {...listProps}
       />
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex items-center justify-between border-b border-blue-100 bg-blue-50 px-4 py-1 md:justify-end md:border-b-0 md:bg-white md:px-8 md:py-4">
-          <div className="flex items-center gap-2 md:hidden">
+          <div className="flex items-center md:hidden">
             <button
               type="button"
               aria-label={hasUpdate ? t.openHistoryUpdate : t.openHistory}
@@ -241,11 +275,11 @@ export default function Home() {
                 />
               )}
             </button>
-            <LogoMark />
             {/* Under 375px there is no room for the name next to the buttons. */}
-            <span className="hidden text-base font-semibold whitespace-nowrap min-[375px]:inline">
-              English Mate
-            </span>
+            <LogoButton
+              onClick={handleLogoClick}
+              textClassName="hidden text-base min-[375px]:inline"
+            />
           </div>
           <LanguageSwitcher value={language} onChange={handleLanguageChange} />
         </header>
@@ -255,7 +289,7 @@ export default function Home() {
             {openItem ? (
               // The key remounts the card per pick, so focus moves to it.
               <ResultView
-                key={`${openItem.id}-${selectCount}`}
+                key={`${openItem.id}-${focusCount}`}
                 sentence={openItem.input}
                 result={openItem.result}
                 language={language}
@@ -268,7 +302,7 @@ export default function Home() {
                 </h1>
                 <p className="mt-1 mb-6 text-neutral-600">{t.intro}</p>
                 <PromptForm
-                  key={selectCount}
+                  key={focusCount}
                   language={language}
                   value={input}
                   onChange={handleInputChange}
