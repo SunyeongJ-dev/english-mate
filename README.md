@@ -6,8 +6,11 @@ English Mate helps English learners check their writing. You enter one English s
 
 - Rates your sentence as natural, slightly awkward, or awkward.
 - Suggests a formal and a casual version of it.
-- Explains the rating in a short note, in English, French, or Korean.
+- Explains the rating in a short note.
 - Asks you to try again when the input is empty, too long, not English, or more than one sentence.
+- Shows the whole app in English, French, or Korean. The suggested sentences are always in English.
+- Saves your checked sentences in your browser, so you can open their results again or delete them. Nothing is saved on a server.
+- Works on phone and desktop. On a phone, the history opens from the menu button.
 
 ## Getting started
 
@@ -49,10 +52,13 @@ The page sends your sentence to `/api/chat`. The route checks the input, asks Cl
 | Path | What's in it |
 | --- | --- |
 | `app/page.tsx` | The main page |
-| `app/components/` | UI components: the form, the result card, the sidebar, the language switcher |
+| `app/components/` | UI components: the form, the result card, the sidebar, the mobile drawer, the history list, the language switcher |
 | `app/api/chat/route.ts` | The only place that calls Claude |
 | `app/lib/prompt.ts` | The prompt for Claude (server only) |
-| `app/lib/types.ts` | Shared types, level labels, and messages |
+| `app/lib/types.ts` | Shared types |
+| `app/lib/texts.ts` | Every text on screen and every error message, in English, French, and Korean |
+| `app/lib/history.ts` | Saving and loading the history in `localStorage` |
+| `app/lib/language.ts` | Saving and loading the selected language in `localStorage` |
 | `docs/specs/` | Specs for each feature |
 
 ## Stack
@@ -66,8 +72,11 @@ Each feature starts as a spec in `docs/specs/`:
 - [000: MVP](docs/specs/000-mvp.md)
 - [001: Prompt response](docs/specs/001-prompt-response.md)
 - [002: UI](docs/specs/002-ui.md)
-
-Planned: saving results (003), choosing Claude's response language (004), and dark mode (005).
+- [003: History](docs/specs/003-history.md)
+- [004: History drawer on mobile](docs/specs/004-history-drawer.md)
+- [005: Check states in the history list](docs/specs/005-sidebar-check-states.md)
+- [006: Language](docs/specs/006-language.md)
+- [007: Logo button and deleting history](docs/specs/007-logo-and-delete.md)
 
 ## License
 

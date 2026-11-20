@@ -44,7 +44,6 @@ Clicking the logo goes back to the input screen, like `New sentence`. The user c
 - Cancelling a check that is loading
 - Moving keyboard focus to a neighbouring item after a delete
 - Swiping to delete on mobile
-- Dark mode (spec 008)
 
 ## Done when
 

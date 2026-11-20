@@ -77,7 +77,6 @@ The three level sentences are in `levels` in `app/lib/texts.ts`.
 - Translating the browser tab title and description
 - Translating the `note` of a saved result: it keeps the language it was checked in
 - Checking sentences in a language other than English
-- Dark mode (spec 008)
 
 ## Done when
 

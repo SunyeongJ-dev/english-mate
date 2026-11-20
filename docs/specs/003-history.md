@@ -41,7 +41,6 @@ Every checked sentence and its feedback are saved in the browser's `localStorage
 - Showing the level, the date, or the language in a history item
 - Keeping history in sync between open tabs or between devices
 - Translating `No chats yet` (spec 006)
-- Dark mode (spec 008)
 
 ## Done when
 
