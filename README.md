@@ -2,6 +2,10 @@
 
 English Mate helps English learners check their writing. You enter one English sentence, and Claude tells you how natural it sounds and suggests two other ways to say it: one formal and one casual.
 
+**Try it:** https://english-mate-sun.vercel.app
+
+![English Mate checking a sentence](docs/demo.gif)
+
 ## What it does
 
 - Rates your sentence as natural, slightly awkward, or awkward.
@@ -36,6 +40,16 @@ You need Node.js, [pnpm](https://pnpm.io), and an [Anthropic API key](https://co
    pnpm run dev
    ```
 
+## Deploying
+
+The app runs on [Vercel](https://vercel.com).
+
+1. Import the GitHub repository into Vercel. Leave the framework and build settings as Vercel detects them.
+2. Add the environment variable `ANTHROPIC_API_KEY` for **Production**. The name must match exactly.
+3. Set a monthly spend limit in the Anthropic Console. Anyone with the link can use the app, and every check is billed to your key.
+
+Every push to `main` deploys again. After you add or change an environment variable, redeploy so it takes effect.
+
 ## Scripts
 
 | Command | What it does |
@@ -60,6 +74,7 @@ The page sends your sentence to `/api/chat`. The route checks the input, asks Cl
 | `app/lib/history.ts` | Saving and loading the history in `localStorage` |
 | `app/lib/language.ts` | Saving and loading the selected language in `localStorage` |
 | `docs/specs/` | Specs for each feature |
+| `.github/workflows/ci.yml` | Runs lint and build on every push to `main` and every pull request |
 
 ## Stack
 
